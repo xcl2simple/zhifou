@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface IQuestionService {
 
-    List<Question> selectQuestionByIndex(Integer sort, Integer startIndex);
+    List<Question> selectQuestionByIndex(Integer sort, Integer startIndex, Integer num);
 
     boolean addQuestion(Question question);
 

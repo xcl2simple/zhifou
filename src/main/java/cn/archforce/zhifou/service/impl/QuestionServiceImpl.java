@@ -6,6 +6,8 @@ import cn.archforce.zhifou.mapper.QuestionMapper;
 import cn.archforce.zhifou.model.entity.Question;
 import cn.archforce.zhifou.service.IQuestionService;
 import cn.archforce.zhifou.utils.TextUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
@@ -34,7 +36,9 @@ public class QuestionServiceImpl implements IQuestionService {
     private MyConfiguration myConfiguration;
 
     @Override
-    public List<Question> selectQuestionByIndex(Integer sort, Integer startIndex) {
+    public List<Question> selectQuestionByIndex(Integer sort, Integer startIndex, Integer num) {
+        String order = sort.equals(0) ? "viewed_num desc" : "create_time desc";
+        PageHelper.startPage(startIndex, num, order);
         return questionMapper.selectAll();
     }
 

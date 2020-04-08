@@ -35,7 +35,7 @@ public class QuestionController {
     })
     @GetMapping("")
     public JsonResult getQuestionByIndex(Integer sort, Integer startIndex, Integer num) {
-        List<Question> questions = questionService.selectQuestionByIndex(sort, startIndex);
+        List<Question> questions = questionService.selectQuestionByIndex(sort, startIndex, num);
         if (CollectionUtils.isEmpty(questions)) {
             return JsonResult.success(new ArrayList<Question>());
         }
