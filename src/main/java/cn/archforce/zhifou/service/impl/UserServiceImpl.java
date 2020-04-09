@@ -73,7 +73,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean updatePassword(String workNum, String password) {
-        if (userMapper.updatePasswordByWorkNum(workNum, password) != 1){
+        String encryptPassword = PasswordUtil.encryption(password);
+        if (userMapper.updatePasswordByWorkNum(workNum, encryptPassword) != 1){
             //修改失败
             return false;
         }
