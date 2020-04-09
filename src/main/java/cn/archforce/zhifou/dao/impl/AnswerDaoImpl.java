@@ -21,6 +21,11 @@ public class AnswerDaoImpl implements AnswerDao {
     private AnswerMapper answerMapper;
 
     @Override
+    public int addAnswer(Answer answer) {
+        return answerMapper.insert(answer);
+    }
+
+    @Override
     public List<Answer> selectAnswerByQuestionId(Long questionId) {
         return answerMapper.selectByExample(Example.builder(Answer.class)
         .where(Sqls.custom().andEqualTo("questionId", questionId))

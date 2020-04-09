@@ -12,6 +12,13 @@ import java.util.List;
 public interface AnswerDao {
 
     /**
+     * 添加回答
+     * @param answer 回答
+     * @return
+     */
+    int addAnswer(Answer answer);
+
+    /**
      * 根据问题id获取回答
      * @param questionId 问题id
      * @return

@@ -50,6 +50,9 @@ public class AnswerServiceImpl implements AnswerService {
         answer.setContent(txtPath);
         answer.setCreateTime(new Date());
         answer.setLikeNum(0);
+        if (answerDao.addAnswer(answer) != 1){
+            return false;
+        }
         return true;
     }
 
