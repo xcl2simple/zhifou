@@ -35,7 +35,7 @@ public class TokenUtil {
      * @param userId 用户ID
      * @return 加密的token
      */
-    public static String getToken(String workNum, Integer userId) {
+    public static String getToken(String workNum, Long userId) {
         try {
             //过期时间
             Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
@@ -102,10 +102,10 @@ public class TokenUtil {
      * @param token
      * @return
      */
-    public static Integer getUserId(String token) {
+    public static Long getUserId(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("userId").asInt();
+            return jwt.getClaim("userId").asLong();
         } catch (JWTDecodeException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();

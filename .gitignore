@@ -1,17 +1,17 @@
-/target/
-/.idea/
-/.mvn/
-/out/
+/target
+/.idea
+/out
+/.mvn
 *.cmd
 *.md
 *.iml
 mvnw
 /src/main/resources/static
 
-#±àÒëÎÄ¼ş
+#ç¼–è¯‘æ–‡ä»¶
 *.class
 
-#°üÎÄ¼ş
+#åŒ…æ–‡ä»¶
 *.jar
 *.war
 *.zip

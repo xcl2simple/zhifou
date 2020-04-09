@@ -33,7 +33,7 @@ public class EmailUtil {
     /**
      * 配置邮件发送者
      */
-    @Value("${spring.mail.from}")
+    @Value("${spring.mail.username}")
     private String from;
 
     /**
@@ -77,7 +77,7 @@ public class EmailUtil {
      * 发送简单文本邮件
      * @param to 邮件接收者邮箱
      */
-    public String sendSimpleMail(String to){
+    public boolean sendSimpleMail(String to){
         //创建SimpleMailMessage对象
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         //邮件发送者
@@ -95,11 +95,11 @@ public class EmailUtil {
             mailSender.send(mailMessage);
             //将验证码存入redis缓存，并设置5分钟过期时间
             redisUtil.set(to, verificationCode, 300);
-            return CodeUtil.getSuccess();
+            return true;
         } catch (MailException e){
             e.printStackTrace();
             redisUtil.del(to);
-            return CodeUtil.getServerError();
+            return false;
         }
     }
 

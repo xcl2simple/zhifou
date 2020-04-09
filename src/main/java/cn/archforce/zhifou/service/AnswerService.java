@@ -1,0 +1,31 @@
+package cn.archforce.zhifou.service;
+
+import cn.archforce.zhifou.model.entity.Answer;
+
+import java.util.List;
+
+/**
+ * @author 隔壁老李
+ * @date 2020/4/8 18:57
+ * @roject zhifou
+ */
+public interface AnswerService {
+
+    /**
+     * 添加回答
+     * @param answer
+     * @return
+     */
+    boolean addAnswer(Answer answer);
+
+    /**
+     * 根据参数获取问题的回答列表
+     * @param questionId
+     * @param sort
+     * @param startIndex
+     * @param num
+     * @return
+     */
+    List<Answer> getAnswerList(Long questionId, Integer sort, Integer startIndex, Integer num);
+
+}

@@ -1,6 +1,5 @@
 package cn.archforce.zhifou.config.interceptors;
 
-import cn.archforce.zhifou.utils.CodeUtil;
 import cn.archforce.zhifou.utils.TokenUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,7 +14,7 @@ import java.io.IOException;
  * @date 2020/4/6 15:29
  * 对于每个请求进行登录验证
  */
-@Component
+@Component("tokenInterceptor")
 public class TokenInterceptor implements HandlerInterceptor {
 
     @Override
@@ -30,19 +29,19 @@ public class TokenInterceptor implements HandlerInterceptor {
                 if (result) {
                     //验证成功更新token，防止使用的期间出现登录失效的情况
                     String workNum = TokenUtil.getWorkNum(token);
-                    Integer userId = TokenUtil.getUserId(token);
+                    Long userId = TokenUtil.getUserId(token);
                     System.out.println(workNum + ", " + userId);
                     response.setHeader("token", TokenUtil.getToken(workNum, userId));
                     return true;
                 }
             }
             //未登录
-            response.getWriter().write(CodeUtil.getNotLogin());
+            response.getWriter().write("{code:5,msg:用户未登录}");
             return false;
         } catch (IOException e) {
             try {
                 //返回服务器异常
-                response.getWriter().write(CodeUtil.getServerError());
+                response.getWriter().write("{code:-1,msg:服务器异常}");
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

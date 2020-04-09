@@ -7,11 +7,10 @@ import tk.mybatis.spring.annotation.MapperScan;
 /**
  * @author 隔壁老李
  * @date 2020/3/31 14:59
- * @roject zhifou
  * 启动类
  */
-@MapperScan(basePackages = "cn.archforce.zhifou.dao")
 @SpringBootApplication
+@MapperScan("cn.archforce.zhifou.mapper")
 public class ZhifouApplication {
 
     public static void main(String[] args) {

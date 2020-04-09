@@ -1,9 +1,9 @@
 package cn.archforce.zhifou.dao;
 
-import cn.archforce.zhifou.mappers.BaseMapper;
 import cn.archforce.zhifou.model.entity.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+import tk.mybatis.mapper.common.BaseMapper;
 
 /**
  * @author 隔壁老李
@@ -20,7 +20,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     @Select("SELECT * FROM user WHERE id=#{id}")
-    User getUserById(Integer id);
+    User getUserById(Long id);
 
     /**
      * 通过工号和密码获取用户信息（登录验证）
@@ -82,7 +82,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     @Update("UPDATE user SET email=#{email} WHERE id=#{id}")
-    int updateEmailById(Integer id, String email);
+    int updateEmailById(Long id, String email);
 
     /**
      * 修改用户基本信息
@@ -94,7 +94,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     @Update("UPDATE user SET name=#{name}, department_id=#{departmentId}, job_id=#{jobId}, avatar=#{avatar} WHERE id=#{id}")
-    int updateUserInfoById(Integer id, String name, Integer departmentId, Integer jobId, String avatar);
+    int updateUserInfoById(Long id, String name, Long departmentId, Long jobId, String avatar);
 
     /**
      * 增加积分
@@ -103,6 +103,6 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     @Update("UPDATE user SET score=#{score}+score WHERE id=#{id}")
-    int addScoreById(Integer id, Integer score);
+    int addScoreById(Long id, Long score);
 
 }
