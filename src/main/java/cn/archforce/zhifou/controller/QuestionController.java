@@ -36,7 +36,7 @@ public class QuestionController {
     @Autowired
     private IQuestionService questionService;
 
-    @ApiOperation(value = "根据sort、startIndex、num参数分页获取问题列表", notes = "排序规则：0代表按热度排序，1代表按时间排序")
+    @ApiOperation(value = "根据sort、startIndex、num参数分页获取问题列表", notes = "排序规则：1代表按热度排序，2代表按时间排序")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "sort", value = "排序规则", paramType = "query", required = false, dataType = "int"),
             @ApiImplicitParam(name = "startIndex", value = "分页查询的索引", paramType = "query", required = false, dataType = "int"),
@@ -44,7 +44,7 @@ public class QuestionController {
     })
     @GetMapping("")
     public JsonResult getQuestionByIndex(Integer sort, Integer startIndex, Integer num) {
-        List<Question> questions = questionService.selectQuestionByIndex(sort, startIndex);
+        List<Question> questions = questionService.selectQuestionByIndex(sort, startIndex, num);
         if (CollectionUtils.isEmpty(questions)) {
             return JsonResult.success(new ArrayList<Question>());
         }

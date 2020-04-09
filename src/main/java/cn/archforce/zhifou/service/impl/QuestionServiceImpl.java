@@ -8,10 +8,10 @@ import cn.archforce.zhifou.service.IQuestionService;
 import cn.archforce.zhifou.utils.TextUtil;
 import cn.archforce.zhifou.model.entity.Question;
 import cn.archforce.zhifou.model.entity.User;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
@@ -65,7 +65,11 @@ public class QuestionServiceImpl implements IQuestionService {
     }
 
     @Override
-    public List<Question> selectQuestionByIndex(Integer sort, Integer startIndex) {
+    public List<Question> selectQuestionByIndex(Integer sort, Integer startIndex, Integer num) {
+        String orderBy = num.equals(1) ? "like_num DESC" : "create_time DESC";
+        Integer index = startIndex < 1 ? 1 : startIndex;
+        Integer number = num < 1 ? 1 : num;
+        PageHelper.startPage(index, number, orderBy);
         return questionMapper.selectAll();
     }
 
