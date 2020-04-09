@@ -24,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
         // excludePathPatterns("/login") 表示不拦截这些请求
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/sendEmail", "/register", "/retrievePassword");
+                .excludePathPatterns("/login", "/sendEmail", "/register", "/retrievePassword", "/swagger-ui.html#/");
     }
 
     @Override
