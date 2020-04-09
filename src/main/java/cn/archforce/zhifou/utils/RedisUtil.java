@@ -112,7 +112,7 @@ public class RedisUtil {
      */
     public boolean set(String key,Object value,long time){
         try {
-            redisTemplate.opsForValue().set(key,value,time);
+            redisTemplate.opsForValue().set(key,value,time,TimeUnit.SECONDS);
             return true;
         }catch (Exception e){
             e.printStackTrace();

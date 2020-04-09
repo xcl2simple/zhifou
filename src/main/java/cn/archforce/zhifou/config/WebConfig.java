@@ -24,11 +24,15 @@ public class WebConfig implements WebMvcConfigurer {
         // excludePathPatterns("/login") 表示不拦截这些请求
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/sendEmail", "/register", "/retrievePassword", "/swagger-ui.html#/");
+                .excludePathPatterns("/login", "/sendEmail", "/register", "/retrievePassword")
+                .excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }
