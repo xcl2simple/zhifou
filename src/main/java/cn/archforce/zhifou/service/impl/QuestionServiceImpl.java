@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author 隔壁老李
@@ -70,7 +68,12 @@ public class QuestionServiceImpl implements IQuestionService {
         Integer index = startIndex < 1 ? 1 : startIndex;
         Integer number = num < 1 ? 1 : num;
         PageHelper.startPage(index, number, orderBy);
-        return questionMapper.selectAll();
+        List<Question> questions = questionMapper.selectAll();
+
+        if (setUserInfo(questions)){
+            return questions;
+        }
+        return new ArrayList<>();
     }
 
     @Override
@@ -98,6 +101,30 @@ public class QuestionServiceImpl implements IQuestionService {
 
         questionDao.add(question);
         return true;
+    }
+
+    /**
+     * 为问题设置回答者的信息
+     * @param questions 问题列表
+     */
+    private boolean setUserInfo(List<Question> questions){
+        if (questions != null){
+            try {
+                Iterator<Question> iterator = questions.iterator();
+                Question question;
+                User user;
+                while (iterator.hasNext()){
+                    question = iterator.next();
+                    user = userMapper.getUserById(question.getUserId());
+                    question.setAuthor(user);
+                }
+                return true;
+            }catch (Exception e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
     }
 
     @Override
