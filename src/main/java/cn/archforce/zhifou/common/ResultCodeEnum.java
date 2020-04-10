@@ -10,13 +10,13 @@ package cn.archforce.zhifou.common;
  */
 public enum ResultCodeEnum {
 
-    SUCCESS(0, "请求成功"),
-    SEVER_EXCEPTION(-1, "服务器异常"),
+    SUCCESS(200, "请求成功"),
+    SEVER_EXCEPTION(500, "服务器异常"),
     PARAM_IS_INVALID(1, "参数不合法"),
     WORK_NUM_NOT_EXIST_OR_WRONG_PASSWORD(2, "工号不存在或密码错误"),
     WORK_NUM_IS_ALREADY_REGISTERED(3, "工号已注册"),
     EMAIL_IS_ALREADY_BOUND(4, "邮箱已被绑定"),
-    USER_NOT_LOG_IN(5, "用户未登录"),
+    USER_NOT_LOG_IN(401, "用户未登录"),
     EMAIL_NOT_MATCH_WORK_NUM(6, "邮箱与工号不匹配"),
     VERIFICATION_CODE_ERROR(7, "验证码错误"),
     ALREADY_LIKED(8, "已经点过赞了"),
