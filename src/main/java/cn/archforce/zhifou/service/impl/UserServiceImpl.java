@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
         System.out.println(token);
         //将token写到响应头部，以待以后的请求认证
         response.setHeader("token", token);
-        return JsonResult.success();
+        return JsonResult.success(token);
     }
 
     @Override

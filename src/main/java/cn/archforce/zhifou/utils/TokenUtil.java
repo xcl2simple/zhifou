@@ -19,9 +19,9 @@ import java.util.Map;
 public class TokenUtil {
 
     /**
-     * 过期时间2小时
+     * 过期时间15天
      */
-    private static final long EXPIRE_TIME = 2 * 60 * 60 * 1000;
+    private static final long EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000;
 
     /**
      * 私钥
@@ -29,7 +29,7 @@ public class TokenUtil {
     private static final String TOKEN_SECRET = "zhifou";
 
     /**
-     * 生成token，2 小时后过期
+     * 生成token，15天后过期
      *
      * @param workNum 工号
      * @param userId 用户ID
@@ -73,7 +73,6 @@ public class TokenUtil {
             verifier.verify(token);
             return true;
         } catch (UnsupportedEncodingException e) {
-            System.out.println(e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -90,7 +89,6 @@ public class TokenUtil {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("workNum").asString();
         } catch (JWTDecodeException e) {
-            System.out.println(e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -107,7 +105,6 @@ public class TokenUtil {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("userId").asLong();
         } catch (JWTDecodeException e) {
-            System.out.println(e.getMessage());
             e.printStackTrace();
             return null;
         }
