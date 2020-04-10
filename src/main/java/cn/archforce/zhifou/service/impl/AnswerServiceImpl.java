@@ -2,8 +2,11 @@ package cn.archforce.zhifou.service.impl;
 
 import cn.archforce.zhifou.config.MyConfiguration;
 import cn.archforce.zhifou.dao.AnswerDao;
+import cn.archforce.zhifou.dao.DepartmentDao;
 import cn.archforce.zhifou.dao.UserMapper;
 import cn.archforce.zhifou.model.entity.Answer;
+import cn.archforce.zhifou.model.entity.Author;
+import cn.archforce.zhifou.model.entity.Job;
 import cn.archforce.zhifou.model.entity.User;
 import cn.archforce.zhifou.service.AnswerService;
 import cn.archforce.zhifou.utils.TextUtil;
@@ -29,6 +32,9 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private DepartmentDao departmentDao;
 
     @Autowired
     private MyConfiguration myConfiguration;
@@ -83,10 +89,14 @@ public class AnswerServiceImpl implements AnswerService {
                 Iterator<Answer> iterator = answers.iterator();
                 Answer answer;
                 User user;
+                Author author;
+                Job job;
                 while (iterator.hasNext()){
                     answer = iterator.next();
                     user = userMapper.getUserById(answer.getUserId());
-                    answer.setAuthor(user);
+                    job = departmentDao.getJob(user.getJobId());
+                    author = new Author(user.getId(), user.getName(), job.getJobName(), user.getAvatar());
+                    answer.setAuthor(author);
                 }
                 return true;
             }catch (Exception e){

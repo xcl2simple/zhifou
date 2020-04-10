@@ -2,6 +2,7 @@ package cn.archforce.zhifou.model.entity;
 
 import lombok.*;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -24,6 +25,7 @@ public class Department {
     /**
      * 部门名称
      */
+    @Column(name = "department_name")
     private String departmentName;
 
 }

@@ -1,9 +1,12 @@
 package cn.archforce.zhifou.service.impl;
 
 import cn.archforce.zhifou.config.MyConfiguration;
+import cn.archforce.zhifou.dao.DepartmentDao;
 import cn.archforce.zhifou.dao.IQuestionDao;
 import cn.archforce.zhifou.dao.UserMapper;
 import cn.archforce.zhifou.mapper.QuestionMapper;
+import cn.archforce.zhifou.model.entity.Author;
+import cn.archforce.zhifou.model.entity.Job;
 import cn.archforce.zhifou.service.IQuestionService;
 import cn.archforce.zhifou.utils.TextUtil;
 import cn.archforce.zhifou.model.entity.Question;
@@ -36,6 +39,9 @@ public class QuestionServiceImpl implements IQuestionService {
     private UserMapper userMapper;
 
     @Autowired
+    private DepartmentDao departmentDao;
+
+    @Autowired
     private QuestionMapper questionMapper;
 
     @Autowired
@@ -52,11 +58,13 @@ public class QuestionServiceImpl implements IQuestionService {
             //获取问题失败
             return null;
         }
-        User author = userMapper.getUserById(question.getUserId());
-        if (author == null){
+        User user = userMapper.getUserById(question.getUserId());
+        if (user == null){
             //获取问题发布者信息失败
             return question;
         }
+        Job job = departmentDao.getJob(user.getJobId());
+        Author author = new Author(user.getId(), user.getName(), job.getJobName(), user.getAvatar());
         //将发布者信息绑定到问题中返回
         question.setAuthor(author);
         return question;
@@ -64,7 +72,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public List<Question> selectQuestionByIndex(Integer sort, Integer startIndex, Integer num) {
-        String orderBy = num.equals(1) ? "like_num DESC" : "create_time DESC";
+        String orderBy = num.equals(1) ? "answered_num DESC" : "create_time DESC";
         Integer index = startIndex < 1 ? 1 : startIndex;
         Integer number = num < 1 ? 1 : num;
         PageHelper.startPage(index, number, orderBy);
@@ -104,7 +112,7 @@ public class QuestionServiceImpl implements IQuestionService {
     }
 
     /**
-     * 为问题设置回答者的信息
+     * 为问题设置作者的信息
      * @param questions 问题列表
      */
     private boolean setUserInfo(List<Question> questions){
@@ -113,10 +121,14 @@ public class QuestionServiceImpl implements IQuestionService {
                 Iterator<Question> iterator = questions.iterator();
                 Question question;
                 User user;
+                Author author;
+                Job job;
                 while (iterator.hasNext()){
                     question = iterator.next();
                     user = userMapper.getUserById(question.getUserId());
-                    question.setAuthor(user);
+                    job = departmentDao.getJob(user.getJobId());
+                    author = new Author(user.getId(), user.getName(), job.getJobName(), user.getAvatar());
+                    question.setAuthor(author);
                 }
                 return true;
             }catch (Exception e){

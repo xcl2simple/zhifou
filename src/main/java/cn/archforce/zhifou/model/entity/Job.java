@@ -25,6 +25,7 @@ public class Job {
     /**
      * 岗位名称
      */
+    @Column(name = "job_name")
     private String jobName;
 
 }

@@ -16,9 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @ToString
 @Table(name = "user")
-public class User implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class User {
 
     /**
      * 用户ID

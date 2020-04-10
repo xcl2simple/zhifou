@@ -39,10 +39,10 @@ public class BaseQuestion {
     protected Date createTime;
 
     /**
-     * 发布者信息
+     * 发布者部分信息
      * 不会作为表字段
      */
     @Transient
-    protected User author;
+    protected Author author;
 
 }

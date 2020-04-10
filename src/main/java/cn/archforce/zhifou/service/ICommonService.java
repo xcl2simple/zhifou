@@ -14,6 +14,6 @@ import java.io.IOException;
  */
 public interface ICommonService {
 
-    public String save(MultipartFile file) throws IOException;
+    String save(MultipartFile file) throws IOException;
 
 }

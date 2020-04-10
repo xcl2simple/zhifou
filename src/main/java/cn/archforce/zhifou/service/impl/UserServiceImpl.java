@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService {
         }
         //密码加密
         user.setPassword(PasswordUtil.encryption(user.getPassword()));
+        user.setScore(0L);
         if (userMapper.addUser(user) != 1){
             //注册失败
             return JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION);

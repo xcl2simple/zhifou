@@ -40,4 +40,5 @@ public class CommonService implements ICommonService {
         log.info("upload path:{}", filePath);
         return filePath;
     }
+
 }
