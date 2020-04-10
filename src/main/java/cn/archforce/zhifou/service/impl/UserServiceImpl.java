@@ -82,12 +82,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateEmail(Integer id, String email) {
+    public String updateEmail(Long id, String email) {
         return null;
     }
 
     @Override
-    public String updateUserInfo(Integer id, String name, String department, String post) {
+    public String updateUserInfo(Long id, String name, Long departmentId, Long jobId) {
         return null;
     }
 

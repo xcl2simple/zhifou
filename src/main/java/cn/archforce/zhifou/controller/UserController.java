@@ -7,6 +7,7 @@ import cn.archforce.zhifou.service.UserService;
 import cn.archforce.zhifou.utils.EmailUtil;
 import cn.archforce.zhifou.utils.RedisUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,6 +44,7 @@ public class UserController {
      * @param email 目标邮箱
      * @return
      */
+    @ApiOperation(value = "发送验证码邮件", notes = "参数email是用户邮箱")
     @PostMapping("/sendEmail")
     public JsonResult sendEmail(String email){
         //判断邮箱是否符合规范
@@ -59,13 +61,14 @@ public class UserController {
      * 登录
      * @return
      */
+    @ApiOperation(value = "登录", notes = "workNum、password分别为工号和密码")
     @PostMapping("/login")
-    public JsonResult login(String number, String password, HttpServletResponse response){
+    public JsonResult login(String workNum, String password, HttpServletResponse response){
         //判断工号是否符合规范
-        if (number == null || !number.matches(numberPattern)){
+        if (workNum == null || !workNum.matches(numberPattern)){
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }
-        return userService.login(number, password, response);
+        return userService.login(workNum, password, response);
     }
 
     /**
@@ -74,6 +77,7 @@ public class UserController {
      * @param code 验证码
      * @return
      */
+    @ApiOperation(value = "注册", notes = "除了头像以外的所有用户信息，以及验证码")
     @PostMapping("/register")
     public JsonResult register(@RequestBody User user, Integer code){
         if (user == null || !user.getWorkNum().matches(numberPattern) || !emailUtil.isFormat(user.getEmail())){
@@ -91,16 +95,17 @@ public class UserController {
 
     /**
      * 找回密码
-     * @param number 工号
+     * @param workNum 工号
      * @param email 工号绑定的邮箱
      * @param code 验证码
      * @param password 新密码
      * @return
      */
+    @ApiOperation(value = "找回密码", notes = "工号，邮箱，验证码，新密码")
     @PutMapping("/retrievePassword")
-    public JsonResult retrievePassword(String number, String email, Integer code, String password){
+    public JsonResult retrievePassword(String workNum, String email, Integer code, String password){
         //检验参数合法性
-        if (number == null || !number.matches(numberPattern) || email == null
+        if (workNum == null || !workNum.matches(numberPattern) || email == null
                 || !emailUtil.isFormat(email)|| code == null || password == null || password.length() != 6){
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }
@@ -110,9 +115,9 @@ public class UserController {
             return JsonResult.failure(ResultCodeEnum.VERIFICATION_CODE_ERROR);
         }
         //检验工号和邮箱是否匹配
-        if (userService.verifyEmail(number, email)){
+        if (userService.verifyEmail(workNum, email)){
             //匹配
-            return userService.updatePassword(number, password) ? JsonResult.success() : JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION);
+            return userService.updatePassword(workNum, password) ? JsonResult.success() : JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION);
         }
         return JsonResult.failure(ResultCodeEnum.EMAIL_NOT_MATCH_WORK_NUM);
     }

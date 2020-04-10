@@ -30,19 +30,19 @@ public interface UserService {
 
     /**
      * 忘记密码时，验证工号与绑定邮箱是否匹配
-     * @param number 工号
+     * @param workNum 工号
      * @param email 邮箱
      * @return
      */
-    Boolean verifyEmail(String number, String email);
+    Boolean verifyEmail(String workNum, String email);
 
     /**
      * 忘记密码时，修改密码
-     * @param number 工号
+     * @param workNum 工号
      * @param password 新密码
      * @return
      */
-    Boolean updatePassword(String number, String password);
+    Boolean updatePassword(String workNum, String password);
 
     /**
      * 修改绑定的邮箱
@@ -50,16 +50,16 @@ public interface UserService {
      * @param email 新邮箱
      * @return
      */
-    String updateEmail(Integer id, String email);
+    String updateEmail(Long id, String email);
 
     /**
      * 修改用户基本信息
      * @param id 用户id
      * @param name 姓名
-     * @param department 部门
-     * @param post 岗位
+     * @param departmentId 部门
+     * @param jobId 岗位
      * @return
      */
-    String updateUserInfo(Integer id, String name, String department, String post);
+    String updateUserInfo(Long id, String name, Long departmentId, Long jobId);
 
 }
