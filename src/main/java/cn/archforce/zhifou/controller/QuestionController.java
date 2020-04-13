@@ -76,4 +76,11 @@ public class QuestionController {
         return JsonResult.success(question);
     }
 
+    @ApiOperation(value = "根据标题搜索问题", notes = "排序、页码、数据条数参数可选")
+    @GetMapping("/search/title")
+    public JsonResult searchByTitle(Integer sort, Integer startIndex, Integer num, @RequestParam(value = "searchTitle") String searchTitle) {
+        List<Question> questions = questionService.searchQuestion(sort,startIndex, num, searchTitle);
+        return JsonResult.success(questions);
+    }
+
 }

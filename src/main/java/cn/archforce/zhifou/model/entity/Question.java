@@ -26,6 +26,16 @@ import javax.persistence.*;
 public class Question extends BaseQuestion{
 
     /**
+     * 对应elasticsearch索引
+     */
+    public static final String INDEX_NAME = "zhifou";
+
+    /**
+     * 对应elasticsearch中type类型
+     */
+    public static final String TYPE = "question";
+
+    /**
      * 标题
      */
     private String title;

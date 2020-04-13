@@ -12,11 +12,22 @@ import cn.archforce.zhifou.utils.TextUtil;
 import cn.archforce.zhifou.model.entity.Question;
 import cn.archforce.zhifou.model.entity.User;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
+import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.*;
+
 
 /**
  * @author 隔壁老李
@@ -31,9 +42,13 @@ import java.util.*;
  * @date 2020/4/7 11:23
  * @since JDK 1.8
  */
+@Slf4j
 @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
 @Service("questionService")
 public class QuestionServiceImpl implements IQuestionService {
+
+    @Autowired
+    private JestClient jestClient;
 
     @Autowired
     private UserMapper userMapper;
@@ -137,6 +152,100 @@ public class QuestionServiceImpl implements IQuestionService {
             }
         }
         return false;
+    }
+
+    /**
+     * 根据标题查询问题
+     * @param sort
+     * @param startIndex
+     * @param num
+     * @param searchTitle
+     * @return
+     */
+    @Override
+    public List<Question> searchQuestion(Integer sort, Integer startIndex, Integer num, String searchTitle) {
+        String dslStr =  getSearchDsl(sort, startIndex, num, searchTitle);
+
+        log.info("dsl : " + dslStr);
+
+        // 用api执行复杂查询
+        List<Question> questions = new ArrayList<>();
+
+        Search search = new Search.Builder(dslStr).addIndex(Question.INDEX_NAME).addType(Question.TYPE).build();
+
+        SearchResult execute = null;
+        try {
+            execute = jestClient.execute(search);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<SearchResult.Hit<Question, Void>> hits = execute.getHits(Question.class);
+
+        for (SearchResult.Hit<Question, Void> hit : hits) {
+            Question source = hit.source;
+
+            //获取高亮内容
+            Map<String, List<String>> highlight = hit.highlight;
+            if(highlight!=null){
+                String title = highlight.get("title").get(0);
+                source.setTitle(title);
+            }
+            questions.add(source);
+        }
+
+        log.info("" + questions.toString());
+
+        return questions;
+    }
+
+    /**
+     * 根据参数生成查询语句
+     *
+     * @param sort
+     * @param startIndex
+     * @param num
+     * @param keyword
+     * @return
+     */
+    private String getSearchDsl(Integer sort, Integer startIndex, Integer num, String keyword) {
+
+        String orderByItem = null;
+        if (sort == null || sort.equals(1)){
+            orderByItem = "answered_num";
+        } else {
+            orderByItem = "create_time";
+        }
+        startIndex = startIndex == null || startIndex < 1 ? 1 : startIndex;
+        num = num == null || num < 0 ? 10 : num;
+
+        // jest的dsl工具
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // bool
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+        // must
+        if (StringUtils.isNotBlank(keyword)) {
+            MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("title", keyword);
+            boolQueryBuilder.must(matchQueryBuilder);
+        }
+        // query
+        searchSourceBuilder.query(boolQueryBuilder);
+        // from
+        searchSourceBuilder.from((startIndex - 1) * num);
+        // size
+        searchSourceBuilder.size(num);
+        // highlight：高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.preTags("<span style='color:red;'>");
+        highlightBuilder.field("title");
+        highlightBuilder.postTags("</span>");
+        searchSourceBuilder.highlight(highlightBuilder);
+        //sort
+        searchSourceBuilder.sort(orderByItem, SortOrder.DESC);
+
+        String dslStr = searchSourceBuilder.toString();
+
+        return dslStr;
     }
 
     @Override

@@ -25,6 +25,8 @@ public interface IQuestionService {
      */
     Question getQuestionDetails(Long questionId);
 
+    List<Question> searchQuestion(Integer sort, Integer startIndex, Integer num, String searchTitle);
+
     boolean exists(Question question);
 
 }

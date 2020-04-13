@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -18,7 +19,9 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class BaseQuestion {
+public class BaseQuestion implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     protected Long id;
