@@ -59,6 +59,8 @@ public class AnswerServiceImpl implements AnswerService {
         if (answerDao.addAnswer(answer) != 1){
             return false;
         }
+        //发布回答加2分
+        userMapper.addScoreById(answer.getUserId(), 2L);
         return true;
     }
 
