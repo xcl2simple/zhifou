@@ -50,4 +50,9 @@ public class Question extends BaseQuestion{
      */
     private Integer viewedNum;
 
+    /**
+     * 状态，1-有效/0-被删除
+     */
+    private Integer status;
+
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,11 +36,11 @@ public class AnswerController {
      */
     @ApiOperation(value = "发布答案", notes = "参数userId、content、questionId对应用户ID、内容、问题ID")
     @PostMapping("/add")
-    public JsonResult addAnswer(@RequestBody Answer answer){
+    public JsonResult addAnswer(HttpServletRequest request, @RequestBody Answer answer){
         if(answer == null){
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }
-        if (answerService.addAnswer(answer)){
+        if (answerService.addAnswer(request, answer)){
             return JsonResult.success();
         }
         return JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION);

@@ -2,6 +2,7 @@ package cn.archforce.zhifou.service;
 
 import cn.archforce.zhifou.model.entity.Answer;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public interface AnswerService {
      * @param answer
      * @return
      */
-    boolean addAnswer(Answer answer);
+    boolean addAnswer(HttpServletRequest request, Answer answer);
 
     /**
      * 根据参数获取问题的回答列表

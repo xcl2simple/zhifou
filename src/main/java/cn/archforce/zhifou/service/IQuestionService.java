@@ -2,6 +2,7 @@ package cn.archforce.zhifou.service;
 
 import cn.archforce.zhifou.model.entity.Question;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -14,9 +15,9 @@ import java.util.List;
  */
 public interface IQuestionService {
 
-    List<Question> selectQuestionByIndex(Integer sort, Integer startIndex,Integer num);
+    List<Question> selectQuestionByIndex(Integer sort, Integer pageNum,Integer pageSize);
 
-    boolean addQuestion(Question question);
+    boolean addQuestion(HttpServletRequest request, Question question);
 
     /**
      * 根据问题id获取问题详情
@@ -25,8 +26,8 @@ public interface IQuestionService {
      */
     Question getQuestionDetails(Long questionId);
 
-    List<Question> searchQuestion(Integer sort, Integer startIndex, Integer num, String searchTitle);
+    List<Question> searchQuestion(Integer sort, Integer pageNum, Integer pageSize, String searchTitle);
 
-    boolean exists(Question question);
+    List<Question> suggestQuestion(String title);
 
 }

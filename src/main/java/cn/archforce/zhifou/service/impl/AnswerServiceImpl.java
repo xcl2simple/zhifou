@@ -9,14 +9,17 @@ import cn.archforce.zhifou.model.entity.Author;
 import cn.archforce.zhifou.model.entity.Job;
 import cn.archforce.zhifou.model.entity.User;
 import cn.archforce.zhifou.service.AnswerService;
-import cn.archforce.zhifou.utils.TextUtil;
+import cn.archforce.zhifou.utils.TokenUtil;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author 隔壁老李
@@ -40,20 +43,10 @@ public class AnswerServiceImpl implements AnswerService {
     private MyConfiguration myConfiguration;
 
     @Override
-    public boolean addAnswer(Answer answer) {
-        String txtPath = null;
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        String yearAndMonth = year + (month / 10 > 0 ? "" + month : "0" + month);
-        String fileName = calendar.getTimeInMillis() + MyConfiguration.SUFFIX_TEXT;
-        try {
-            txtPath = TextUtil.saveToLocal(answer.getContent(), myConfiguration.getTextRoot() + yearAndMonth, fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        answer.setContent(txtPath);
+    public boolean addAnswer(HttpServletRequest request, Answer answer) {
+        String token = request.getHeader("token");
+        Long userId = TokenUtil.getUserId(token);
+        answer.setUserId(userId);
         answer.setCreateTime(new Date());
         answer.setLikeNum(0);
         if (answerDao.addAnswer(answer) != 1){

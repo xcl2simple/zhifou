@@ -27,17 +27,21 @@ public class CommonService implements ICommonService {
 
     @Override
     public String save(MultipartFile file) throws IOException {
+        String fileName = file.getOriginalFilename();
+        String suffixName = fileName.substring(fileName.lastIndexOf("."));
+
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
+        long timeStamp = calendar.getTimeInMillis();
         String yearAndMonth = year + (month / 10 > 0 ? "" + month : "0" + month);
-        String filePath = myConfiguration.getUploadRoot() + yearAndMonth + "/" + file.getOriginalFilename();
+        String filePath = myConfiguration.getUploadRoot() + yearAndMonth + "/" + timeStamp +suffixName;
         File dest = new File(filePath);
         if (!dest.exists()) {
             dest.getParentFile().mkdirs();
         }
         file.transferTo(dest);
-        log.info("upload path:{}", filePath);
+        log.info("上传的文件名为：{}, 保存地址：{}", fileName, filePath);
         return filePath;
     }
 

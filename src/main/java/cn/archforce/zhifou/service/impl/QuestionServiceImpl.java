@@ -1,30 +1,28 @@
 package cn.archforce.zhifou.service.impl;
 
-import cn.archforce.zhifou.config.MyConfiguration;
 import cn.archforce.zhifou.dao.DepartmentDao;
 import cn.archforce.zhifou.dao.IQuestionDao;
 import cn.archforce.zhifou.dao.UserMapper;
 import cn.archforce.zhifou.mapper.QuestionMapper;
 import cn.archforce.zhifou.model.entity.Author;
 import cn.archforce.zhifou.model.entity.Job;
-import cn.archforce.zhifou.service.IQuestionService;
-import cn.archforce.zhifou.utils.TextUtil;
 import cn.archforce.zhifou.model.entity.Question;
 import cn.archforce.zhifou.model.entity.User;
+import cn.archforce.zhifou.service.IQuestionService;
+import cn.archforce.zhifou.utils.ElasticUtil;
+import cn.archforce.zhifou.utils.TokenUtil;
 import com.github.pagehelper.PageHelper;
-import lombok.extern.slf4j.Slf4j;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
-import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.highlight.HighlightBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.util.Sqls;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
 
@@ -62,9 +60,6 @@ public class QuestionServiceImpl implements IQuestionService {
     @Autowired
     private IQuestionDao questionDao;
 
-    @Autowired
-    private MyConfiguration myConfiguration;
-
     @Override
     public Question getQuestionDetails(Long questionId) {
         //通过id获取问题信息
@@ -85,13 +80,23 @@ public class QuestionServiceImpl implements IQuestionService {
         return question;
     }
 
+    /**
+     * 首页分页推荐问题
+     * @param sort
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @Override
-    public List<Question> selectQuestionByIndex(Integer sort, Integer startIndex, Integer num) {
-        String orderBy = num.equals(1) ? "answered_num DESC" : "create_time DESC";
-        Integer index = startIndex < 1 ? 1 : startIndex;
-        Integer number = num < 1 ? 1 : num;
+    public List<Question> selectQuestionByIndex(Integer sort, Integer pageNum, Integer pageSize) {
+        String orderBy = sort.equals(1) ? "viewed_num DESC" : "create_time DESC";
+        Integer index = pageNum < 1 ? 1 : pageNum;
+        Integer number = pageSize < 1 ? 1 : pageSize;
         PageHelper.startPage(index, number, orderBy);
-        List<Question> questions = questionMapper.selectAll();
+        List<Question> questions = questionMapper.selectByExample(Example.builder(Question.class)
+                .where(Sqls.custom().andEqualTo("status", 1))
+                .build());
+
 
         if (setUserInfo(questions)){
             return questions;
@@ -99,30 +104,25 @@ public class QuestionServiceImpl implements IQuestionService {
         return new ArrayList<>();
     }
 
+    /**
+     * 发布问题
+     *
+     * @param question
+     * @return
+     */
     @Override
-    public boolean addQuestion(Question question) {
-        if (question == null || exists(question)) {
-            return false;
-        }
-
-        String txtPath = null;
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        String yearAndMonth = year + (month / 10 > 0 ? "" + month : "0" + month);
-        String fileName = calendar.getTimeInMillis() + MyConfiguration.SUFFIX_TEXT;
-        try {
-             txtPath = TextUtil.saveToLocal(question.getContent(), myConfiguration.getTextRoot() + yearAndMonth, fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        question.setContent(txtPath);
+    public boolean addQuestion(HttpServletRequest request, Question question) {
+        String token = request.getHeader("token");
+        Long userId = TokenUtil.getUserId(token);
+        question.setUserId(userId);
         question.setCreateTime(new Date());
         question.setAnsweredNum(0);
         question.setViewedNum(0);
+        question.setStatus(1);
 
-        questionDao.add(question);
+        if (questionDao.add(question) != 1) {
+            return false;
+        }
         return true;
     }
 
@@ -157,14 +157,14 @@ public class QuestionServiceImpl implements IQuestionService {
     /**
      * 根据标题查询问题
      * @param sort
-     * @param startIndex
-     * @param num
+     * @param pageNum
+     * @param pageSize
      * @param searchTitle
      * @return
      */
     @Override
-    public List<Question> searchQuestion(Integer sort, Integer startIndex, Integer num, String searchTitle) {
-        String dslStr =  getSearchDsl(sort, startIndex, num, searchTitle);
+    public List<Question> searchQuestion(Integer sort, Integer pageNum, Integer pageSize, String searchTitle) {
+        String dslStr =  ElasticUtil.getSearchDsl(sort, pageNum, pageSize, searchTitle);
 
         log.info("dsl : " + dslStr);
 
@@ -200,56 +200,36 @@ public class QuestionServiceImpl implements IQuestionService {
     }
 
     /**
-     * 根据参数生成查询语句
-     *
-     * @param sort
-     * @param startIndex
-     * @param num
-     * @param keyword
+     * 推荐已有回答的相似问题
+     * @param title
      * @return
      */
-    private String getSearchDsl(Integer sort, Integer startIndex, Integer num, String keyword) {
+    public List<Question> suggestQuestion(String title) {
+        String dslStr =  ElasticUtil.getSearchDsl(1, 1, 10, title);
 
-        String orderByItem = null;
-        if (sort == null || sort.equals(1)){
-            orderByItem = "answered_num";
-        } else {
-            orderByItem = "create_time";
+        log.info("dsl : " + dslStr);
+
+        // 用api执行复杂查询
+        List<Question> questions = new ArrayList<>();
+
+        Search search = new Search.Builder(dslStr).addIndex(Question.INDEX_NAME).addType(Question.TYPE).build();
+
+        SearchResult execute = null;
+        try {
+            execute = jestClient.execute(search);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        startIndex = startIndex == null || startIndex < 1 ? 1 : startIndex;
-        num = num == null || num < 0 ? 10 : num;
 
-        // jest的dsl工具
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        // bool
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        // must
-        if (StringUtils.isNotBlank(keyword)) {
-            MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("title", keyword);
-            boolQueryBuilder.must(matchQueryBuilder);
+        List<SearchResult.Hit<Question, Void>> hits = execute.getHits(Question.class);
+        for (SearchResult.Hit<Question, Void> hit : hits) {
+            Question source = hit.source;
+            questions.add(source);
         }
-        // query
-        searchSourceBuilder.query(boolQueryBuilder);
-        // from
-        searchSourceBuilder.from((startIndex - 1) * num);
-        // size
-        searchSourceBuilder.size(num);
-        // highlight：高亮
-        HighlightBuilder highlightBuilder = new HighlightBuilder();
-        highlightBuilder.preTags("<span style='color:red;'>");
-        highlightBuilder.field("title");
-        highlightBuilder.postTags("</span>");
-        searchSourceBuilder.highlight(highlightBuilder);
-        //sort
-        searchSourceBuilder.sort(orderByItem, SortOrder.DESC);
 
-        String dslStr = searchSourceBuilder.toString();
+        log.info("" + questions.toString());
 
-        return dslStr;
+        return questions;
     }
 
-    @Override
-    public boolean exists(Question question) {
-        return false;
-    }
 }
