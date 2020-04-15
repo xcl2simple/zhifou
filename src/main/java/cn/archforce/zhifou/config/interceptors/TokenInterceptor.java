@@ -30,18 +30,18 @@ public class TokenInterceptor implements HandlerInterceptor {
                     //验证成功更新token，防止使用的期间出现登录失效的情况
                     String workNum = TokenUtil.getWorkNum(token);
                     Long userId = TokenUtil.getUserId(token);
-                    System.out.println(workNum + ", " + userId);
                     response.setHeader("token", TokenUtil.getToken(workNum, userId));
+                    response.setHeader("Access-Control-Expose-Headers", "token");
                     return true;
                 }
             }
             //未登录
-            response.getWriter().write("{code:5,msg:用户未登录}");
+            response.getWriter().write("{code:401,msg:用户未登录}");
             return false;
         } catch (IOException e) {
             try {
                 //返回服务器异常
-                response.getWriter().write("{code:-1,msg:服务器异常}");
+                response.getWriter().write("{code:500,msg:服务器异常}");
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

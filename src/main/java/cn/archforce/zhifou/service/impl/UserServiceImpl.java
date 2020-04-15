@@ -2,6 +2,7 @@ package cn.archforce.zhifou.service.impl;
 
 import cn.archforce.zhifou.common.JsonResult;
 import cn.archforce.zhifou.common.ResultCodeEnum;
+import cn.archforce.zhifou.dao.DepartmentDao;
 import cn.archforce.zhifou.dao.UserMapper;
 import cn.archforce.zhifou.model.entity.User;
 import cn.archforce.zhifou.service.UserService;
@@ -10,7 +11,9 @@ import cn.archforce.zhifou.utils.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springfox.documentation.spring.web.json.Json;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -24,6 +27,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private DepartmentDao departmentDao;
 
     @Override
     public JsonResult login(String workNum, String password, HttpServletResponse response) {
@@ -40,7 +46,14 @@ public class UserServiceImpl implements UserService {
         System.out.println(token);
         //将token写到响应头部，以待以后的请求认证
         response.setHeader("token", token);
+        response.setHeader("Access-Control-Expose-Headers", "token");
         return JsonResult.success(token);
+    }
+
+    @Override
+    public JsonResult logout(HttpServletResponse response) {
+        response.setHeader("token", "");
+        return JsonResult.success();
     }
 
     @Override
@@ -80,6 +93,20 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public JsonResult getInfo(HttpServletRequest request) {
+        Long id = TokenUtil.getUserId(request.getHeader("token"));
+        User user = userMapper.getUserById(id);
+        if (user == null){
+            return JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION);
+        }
+        String department = departmentDao.getDepartment(user.getDepartmentId()).getDepartmentName();
+        String job = departmentDao.getJob(user.getJobId()).getJobName();
+        Json json = new Json("{\"id\":" + user.getId() + ",\"name\":" + user.getName() + ",\"department\":" + department
+                + ",\"job\":" + job + ",\"avatar\":" + user.getAvatar() + "}");
+        return JsonResult.success(json);
     }
 
     @Override

@@ -9,11 +9,9 @@ import cn.archforce.zhifou.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -72,6 +70,17 @@ public class UserController {
     }
 
     /**
+     * 注销
+     * @param response
+     * @return
+     */
+    @ApiOperation(value = "注销")
+    @PostMapping("/logout")
+    public JsonResult logout(HttpServletResponse response){
+        return userService.logout(response);
+    }
+
+    /**
      * 注册
      * @param user 用户信息
      * @param code 验证码
@@ -120,6 +129,17 @@ public class UserController {
             return userService.updatePassword(workNum, password) ? JsonResult.success() : JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION);
         }
         return JsonResult.failure(ResultCodeEnum.EMAIL_NOT_MATCH_WORK_NUM);
+    }
+
+    /**
+     * 获取当前登录用户信息
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "获取当前登录用户信息")
+    @GetMapping("/getInfo")
+    public JsonResult getInfo(HttpServletRequest request){
+        return userService.getInfo(request);
     }
 
     @PutMapping("/updateEmail")
