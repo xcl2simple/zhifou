@@ -2,7 +2,7 @@ package cn.archforce.zhifou.model.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Table;
 
 /**
  * @author 隔壁老李

@@ -30,9 +30,9 @@ public class ElasticUtil {
     public static String getSearchDsl(Integer sort, Integer startIndex, Integer num, String keyword) {
         String orderByItem = null;
         if (sort == null || sort.equals(1)){
-            orderByItem = "viewed_num";
+            orderByItem = "viewedNum";
         } else {
-            orderByItem = "create_time";
+            orderByItem = "createTime";
         }
         startIndex = startIndex == null || startIndex < 1 ? 1 : startIndex;
         num = num == null || num < 0 ? 10 : num;
