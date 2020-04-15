@@ -104,8 +104,8 @@ public class UserServiceImpl implements UserService {
         }
         String department = departmentDao.getDepartment(user.getDepartmentId()).getDepartmentName();
         String job = departmentDao.getJob(user.getJobId()).getJobName();
-        Json json = new Json("{\"id\":" + user.getId() + ",\"name\":" + user.getName() + ",\"department\":" + department
-                + ",\"job\":" + job + ",\"avatar\":" + user.getAvatar() + "}");
+        Json json = new Json("{\"id\":" + user.getId() + ",\"name\":\"" + user.getName() + "\",\"department\":\"" + department
+                + "\",\"job\":\"" + job + "\",\"avatar\":\"" + user.getAvatar() + "\"}");
         return JsonResult.success(json);
     }
 
