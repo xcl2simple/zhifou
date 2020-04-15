@@ -29,6 +29,11 @@ public class MyConfiguration {
     private String root;
 
     /**
+     * 服务器地址
+     */
+    private String hostAndPort;
+
+    /**
      * 获取文件上传地址
      * @return
      */

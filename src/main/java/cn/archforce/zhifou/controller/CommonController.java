@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +30,11 @@ public class CommonController {
     private ICommonService commonService;
 
     @PostMapping("/upload")
-    public JsonResult uploadFileToServer(MultipartFile file) {
+    public JsonResult uploadFileToServer(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
+        }
+
         String path = null;
         try {
              path = commonService.save(file);

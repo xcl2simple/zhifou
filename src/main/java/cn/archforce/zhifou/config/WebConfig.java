@@ -16,6 +16,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
+    private MyConfiguration myConfiguration;
+
+    @Autowired
     private TokenInterceptor tokenInterceptor;
 
     @Override
@@ -34,5 +37,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:///" + myConfiguration.getUploadRoot());
     }
+
 }

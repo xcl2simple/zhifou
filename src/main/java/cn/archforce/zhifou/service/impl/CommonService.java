@@ -33,16 +33,19 @@ public class CommonService implements ICommonService {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
-        long timeStamp = calendar.getTimeInMillis();
         String yearAndMonth = year + (month / 10 > 0 ? "" + month : "0" + month);
-        String filePath = myConfiguration.getUploadRoot() + yearAndMonth + "/" + timeStamp +suffixName;
-        File dest = new File(filePath);
+        long timeStamp = calendar.getTimeInMillis();
+
+        String reName = timeStamp + suffixName;
+        String fileSavePath = myConfiguration.getUploadRoot() + yearAndMonth + "/" + reName ;
+        File dest = new File(fileSavePath);
         if (!dest.exists()) {
             dest.getParentFile().mkdirs();
         }
         file.transferTo(dest);
-        log.info("上传的文件名为：{}, 保存地址：{}", fileName, filePath);
-        return filePath;
+        log.info("上传的文件名为：{}, 保存地址：{}", fileName,  fileSavePath);
+        String url = myConfiguration.getHostAndPort() + "/images/" + yearAndMonth + "/" + reName;
+        return url;
     }
 
 }
