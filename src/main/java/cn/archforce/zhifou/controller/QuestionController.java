@@ -85,10 +85,10 @@ public class QuestionController {
     @ApiOperation(value = "根据标题搜索问题,关键字高亮返回", notes = "排序、页码、数据条数参数可选")
     @GetMapping("/title/search")
     public JsonResult searchByTitleAndHighlight(@RequestParam(required = false) Integer sort,
-                                                @RequestParam(required = false) Integer startIndex,
-                                                @RequestParam(required = false) Integer num,
+                                                @RequestParam(required = false) Integer pageNum,
+                                                @RequestParam(required = false) Integer pageSize,
                                                 @RequestParam(value = "searchTitle") String searchTitle) {
-        List<Question> questions = questionService.searchQuestion(sort,startIndex, num, searchTitle);
+        List<Question> questions = questionService.searchQuestion(sort,pageNum, pageSize, searchTitle);
         return JsonResult.success(questions);
     }
 
