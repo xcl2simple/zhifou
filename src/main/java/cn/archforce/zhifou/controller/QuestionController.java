@@ -96,8 +96,8 @@ public class QuestionController {
     @ApiOperation(value = "根据标题推荐已有回答的相似问题")
     @GetMapping("/title/like")
     public JsonResult searchByTitle(@RequestParam(value = "title") String title) {
-        List<Question> questions = questionService.suggestQuestion(title);
-        return JsonResult.success(questions);
+        List<Question> list = questionService.suggestQuestion(title);
+        return JsonResult.success(list);
     }
 
 }

@@ -71,7 +71,7 @@ public class AnswerServiceImpl implements AnswerService {
         Map<String, Object> result = new HashMap<>();
         result.put("total", page.getTotal());
         result.put("totalPage", page.getPages());
-        result.put("answers", answers);
+        result.put("list", answers);
         return result;
     }
 

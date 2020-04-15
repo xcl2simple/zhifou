@@ -102,7 +102,7 @@ public class QuestionServiceImpl implements IQuestionService {
         Map<String, Object> result = new HashMap<>();
         result.put("total", page.getTotal());
         result.put("totalPage", page.getPages());
-        result.put("questions", questions);
+        result.put("list", questions);
 
         return result;
     }
@@ -211,7 +211,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
         result.put("total", execute.getTotal());
         result.put("totalPage", totalPage);
-        result.put("questions", questions);
+        result.put("list", questions);
 
         return result;
     }
