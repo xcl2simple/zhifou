@@ -13,8 +13,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 隔壁老李
@@ -43,13 +44,13 @@ public class QuestionController {
             @ApiImplicitParam(name = "pageNum", value = "分页查询的索引", paramType = "query", required = false, dataType = "int"),
             @ApiImplicitParam(name = "pageSize", value = "查询的数据条数", paramType = "query", required = false, dataType = "int")
     })
-    @GetMapping("")
+    @GetMapping("/list")
     public JsonResult getQuestionByIndex(@RequestParam(required = false) Integer sort,
                                          @RequestParam(required = false) Integer pageNum,
                                          @RequestParam(required = false) Integer pageSize) {
-        List<Question> questions = questionService.selectQuestionByIndex(sort, pageNum, pageSize);
-        if (CollectionUtils.isEmpty(questions)) {
-            return JsonResult.success(new ArrayList<Question>());
+        Map<String, Object> questions = questionService.selectQuestionByIndex(sort, pageNum, pageSize);
+        if (CollectionUtils.isEmpty(questions)){
+            return JsonResult.success(new HashMap<String, Object>());
         }
         return JsonResult.success(questions);
     }
@@ -88,7 +89,7 @@ public class QuestionController {
                                                 @RequestParam(required = false) Integer pageNum,
                                                 @RequestParam(required = false) Integer pageSize,
                                                 @RequestParam(value = "searchTitle") String searchTitle) {
-        List<Question> questions = questionService.searchQuestion(sort,pageNum, pageSize, searchTitle);
+        Map<String, Object> questions = questionService.searchQuestion(sort,pageNum, pageSize, searchTitle);
         return JsonResult.success(questions);
     }
 

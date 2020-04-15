@@ -13,8 +13,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author 隔壁老李
@@ -66,9 +66,9 @@ public class AnswerController {
         if (questionId == null || sort == null || pageNum == null || pageSize == null || pageNum < 0 || pageSize < 0) {
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }
-        List<Answer> answers = answerService.getAnswerList(questionId, sort, pageNum, pageSize);
+        Map<String, Object> answers = answerService.getAnswerList(questionId, sort, pageNum, pageSize);
         if (CollectionUtils.isEmpty(answers)){
-            return JsonResult.success(new ArrayList<Answer>());
+            return JsonResult.success(new HashMap<String, Object>());
         }
         return JsonResult.success(answers);
     }

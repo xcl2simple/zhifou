@@ -21,21 +21,13 @@ public class ElasticUtil {
     /**
      * 根据参数生成查询语句
      *
-     * @param sort
-     * @param startIndex
-     * @param num
+     * @param orderByItem
+     * @param pageNum
+     * @param pageSize
      * @param keyword
      * @return
      */
-    public static String getSearchDsl(Integer sort, Integer startIndex, Integer num, String keyword) {
-        String orderByItem = null;
-        if (sort == null || sort.equals(1)){
-            orderByItem = "viewedNum";
-        } else {
-            orderByItem = "createTime";
-        }
-        startIndex = startIndex == null || startIndex < 1 ? 1 : startIndex;
-        num = num == null || num < 0 ? 10 : num;
+    public static String getSearchDsl(String orderByItem, Integer pageNum, Integer pageSize, String keyword) {
 
         // jest的dsl工具
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -54,9 +46,9 @@ public class ElasticUtil {
         // query
         searchSourceBuilder.query(boolQueryBuilder);
         // from
-        searchSourceBuilder.from((startIndex - 1) * num);
+        searchSourceBuilder.from((pageNum - 1) * pageSize);
         // size
-        searchSourceBuilder.size(num);
+        searchSourceBuilder.size(pageSize);
         // highlight：高亮
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         highlightBuilder.preTags("<span style='color:red;'>");

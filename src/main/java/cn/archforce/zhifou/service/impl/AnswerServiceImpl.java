@@ -10,16 +10,14 @@ import cn.archforce.zhifou.model.entity.Job;
 import cn.archforce.zhifou.model.entity.User;
 import cn.archforce.zhifou.service.AnswerService;
 import cn.archforce.zhifou.utils.TokenUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author 隔壁老李
@@ -58,7 +56,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public List<Answer> getAnswerList(Long questionId, Integer sort, Integer pageNum, Integer pageSize) {
+    public Map<String, Object> getAnswerList(Long questionId, Integer sort, Integer pageNum, Integer pageSize) {
         String orderBy;
         if (sort == 1){
             orderBy = "like_num DESC";
@@ -66,12 +64,15 @@ public class AnswerServiceImpl implements AnswerService {
             orderBy = "create_time DESC";
         }
         //设置页码，数据量和排序方式
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        Page page =PageHelper.startPage(pageNum, pageSize, orderBy);
         List<Answer> answers = answerDao.selectAnswerByQuestionId(questionId);
-        if (getUserInfo(answers)){
-            return answers;
-        }
-        return new ArrayList<>();
+        getUserInfo(answers);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("total", page.getTotal());
+        result.put("totalPage", page.getPages());
+        result.put("answers", answers);
+        return result;
     }
 
     /**

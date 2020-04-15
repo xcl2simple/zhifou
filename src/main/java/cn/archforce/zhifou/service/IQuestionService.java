@@ -4,6 +4,7 @@ import cn.archforce.zhifou.model.entity.Question;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Description:
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public interface IQuestionService {
 
-    List<Question> selectQuestionByIndex(Integer sort, Integer pageNum,Integer pageSize);
+    Map<String, Object> selectQuestionByIndex(Integer sort, Integer pageNum,Integer pageSize);
 
     boolean addQuestion(HttpServletRequest request, Question question);
 
@@ -26,7 +27,7 @@ public interface IQuestionService {
      */
     Question getQuestionDetails(Long questionId);
 
-    List<Question> searchQuestion(Integer sort, Integer pageNum, Integer pageSize, String searchTitle);
+    Map<String, Object> searchQuestion(Integer sort, Integer pageNum, Integer pageSize, String searchTitle);
 
     List<Question> suggestQuestion(String title);
 

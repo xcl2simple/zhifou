@@ -3,7 +3,7 @@ package cn.archforce.zhifou.service;
 import cn.archforce.zhifou.model.entity.Answer;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author 隔壁老李
@@ -27,6 +27,6 @@ public interface AnswerService {
      * @param pageSize
      * @return
      */
-    List<Answer> getAnswerList(Long questionId, Integer sort, Integer pageNum, Integer pageSize);
+    Map<String, Object> getAnswerList(Long questionId, Integer sort, Integer pageNum, Integer pageSize);
 
 }

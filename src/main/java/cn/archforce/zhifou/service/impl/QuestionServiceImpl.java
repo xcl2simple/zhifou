@@ -11,6 +11,7 @@ import cn.archforce.zhifou.model.entity.User;
 import cn.archforce.zhifou.service.IQuestionService;
 import cn.archforce.zhifou.utils.ElasticUtil;
 import cn.archforce.zhifou.utils.TokenUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
@@ -88,20 +89,22 @@ public class QuestionServiceImpl implements IQuestionService {
      * @return
      */
     @Override
-    public List<Question> selectQuestionByIndex(Integer sort, Integer pageNum, Integer pageSize) {
-        String orderBy = sort.equals(1) ? "viewed_num DESC" : "create_time DESC";
+    public Map<String, Object> selectQuestionByIndex(Integer sort, Integer pageNum, Integer pageSize) {
+        String orderBy = (sort == null || sort.equals(1)) ? "viewed_num DESC" : "create_time DESC";
         Integer index = pageNum < 1 ? 1 : pageNum;
         Integer number = pageSize < 1 ? 1 : pageSize;
-        PageHelper.startPage(index, number, orderBy);
+        Page page = PageHelper.startPage(index, number, orderBy);
         List<Question> questions = questionMapper.selectByExample(Example.builder(Question.class)
                 .where(Sqls.custom().andEqualTo("status", 1))
                 .build());
+        setUserInfo(questions);
 
+        Map<String, Object> result = new HashMap<>();
+        result.put("total", page.getTotal());
+        result.put("totalPage", page.getPages());
+        result.put("questions", questions);
 
-        if (setUserInfo(questions)){
-            return questions;
-        }
-        return new ArrayList<>();
+        return result;
     }
 
     /**
@@ -163,8 +166,17 @@ public class QuestionServiceImpl implements IQuestionService {
      * @return
      */
     @Override
-    public List<Question> searchQuestion(Integer sort, Integer pageNum, Integer pageSize, String searchTitle) {
-        String dslStr =  ElasticUtil.getSearchDsl(sort, pageNum, pageSize, searchTitle);
+    public Map<String, Object> searchQuestion(Integer sort, Integer pageNum, Integer pageSize, String searchTitle) {
+        Map<String, Object> result = new HashMap<>();
+        String orderByItem = null;
+        if (sort == null || sort.equals(1)){
+            orderByItem = "viewedNum";
+        } else {
+            orderByItem = "createTime";
+        }
+        pageNum = pageNum == null || pageNum < 1 ? 1 : pageNum;
+        pageSize = pageSize == null || pageSize < 0 ? 10 : pageSize;
+        String dslStr =  ElasticUtil.getSearchDsl(orderByItem, pageNum, pageSize, searchTitle);
 
         log.info("dsl : " + dslStr);
 
@@ -193,10 +205,15 @@ public class QuestionServiceImpl implements IQuestionService {
             }
             questions.add(source);
         }
+        Integer totalPage = (execute.getTotal() + pageSize - 1) / pageSize;
 
-        log.info("" + questions.toString());
+        log.info("TotalPage: " + totalPage + "" + questions.toString());
 
-        return questions;
+        result.put("total", execute.getTotal());
+        result.put("totalPage", totalPage);
+        result.put("questions", questions);
+
+        return result;
     }
 
     /**
@@ -206,7 +223,7 @@ public class QuestionServiceImpl implements IQuestionService {
      */
     @Override
     public List<Question> suggestQuestion(String title) {
-        String dslStr =  ElasticUtil.getSearchDsl(1, 1, 10, title);
+        String dslStr =  ElasticUtil.getSearchDsl("viewedNum", 1, 10, title);
 
         log.info("dsl : " + dslStr);
 
