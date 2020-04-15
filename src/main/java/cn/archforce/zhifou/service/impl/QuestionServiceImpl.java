@@ -204,6 +204,7 @@ public class QuestionServiceImpl implements IQuestionService {
      * @param title
      * @return
      */
+    @Override
     public List<Question> suggestQuestion(String title) {
         String dslStr =  ElasticUtil.getSearchDsl(1, 1, 10, title);
 

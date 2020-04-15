@@ -58,7 +58,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public List<Answer> getAnswerList(Long questionId, Integer sort, Integer startIndex, Integer num) {
+    public List<Answer> getAnswerList(Long questionId, Integer sort, Integer pageNum, Integer pageSize) {
         String orderBy;
         if (sort == 1){
             orderBy = "like_num DESC";
@@ -66,7 +66,7 @@ public class AnswerServiceImpl implements AnswerService {
             orderBy = "create_time DESC";
         }
         //设置页码，数据量和排序方式
-        PageHelper.startPage(startIndex, num, orderBy);
+        PageHelper.startPage(pageNum, pageSize, orderBy);
         List<Answer> answers = answerDao.selectAnswerByQuestionId(questionId);
         if (getUserInfo(answers)){
             return answers;

@@ -3,6 +3,7 @@ package cn.archforce.zhifou.service;
 import cn.archforce.zhifou.common.JsonResult;
 import cn.archforce.zhifou.model.entity.User;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -20,6 +21,13 @@ public interface UserService {
      * @return
      */
     JsonResult login(String workNum, String password, HttpServletResponse response);
+
+    /**
+     * 注销
+     * @param response
+     * @return
+     */
+    JsonResult logout(HttpServletResponse response);
 
     /**
      * 用户注册
@@ -43,6 +51,13 @@ public interface UserService {
      * @return
      */
     Boolean updatePassword(String workNum, String password);
+
+    /**
+     * 获取当前登录用户信息
+     * @param request
+     * @return
+     */
+    JsonResult getInfo(HttpServletRequest request);
 
     /**
      * 修改绑定的邮箱

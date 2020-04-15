@@ -53,7 +53,6 @@ public class TokenUtil {
                     .withExpiresAt(date)
                     .sign(algorithm);
         } catch (UnsupportedEncodingException e) {
-            System.out.println(e.getMessage());
             e.printStackTrace();
             return null;
         }

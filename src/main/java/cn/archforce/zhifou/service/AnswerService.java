@@ -23,10 +23,10 @@ public interface AnswerService {
      * 根据参数获取问题的回答列表
      * @param questionId
      * @param sort
-     * @param startIndex
-     * @param num
+     * @param pageNum
+     * @param pageSize
      * @return
      */
-    List<Answer> getAnswerList(Long questionId, Integer sort, Integer startIndex, Integer num);
+    List<Answer> getAnswerList(Long questionId, Integer sort, Integer pageNum, Integer pageSize);
 
 }

@@ -50,23 +50,23 @@ public class AnswerController {
      * 根据参数获取对应问题的回答
      * @param questionId 问题id
      * @param sort 排序方式。1：按热度排序；2：按时间排序
-     * @param startIndex 起始下标
-     * @param num 获取数量
+     * @param pageNum 起始下标
+     * @param pageSize 获取数量
      * @return
      */
-    @ApiOperation(value = "根据sort、startIndex、num参数分页获取回答列表", notes = "排序规则：1代表按热度排序，2代表按时间排序")
+    @ApiOperation(value = "根据sort、pageNum、pageSize参数分页获取回答列表", notes = "排序规则：1代表按热度排序，2代表按时间排序")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "questionId", value = "问题id", paramType = "query", required = true, dataType = "long"),
             @ApiImplicitParam(name = "sort", value = "排序规则", paramType = "query", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "startIndex", value = "分页查询的索引", paramType = "query", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "num", value = "查询的数据条数", paramType = "query", required = true, dataType = "int")
+            @ApiImplicitParam(name = "pageNum", value = "分页查询的索引", paramType = "query", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "pageSize", value = "查询的数据条数", paramType = "query", required = true, dataType = "int")
     })
     @GetMapping("/list")
-    public JsonResult getAnswerList(Long questionId, Integer sort, Integer startIndex, Integer num) {
-        if (questionId == null || sort == null || startIndex == null || num == null || startIndex < 0 || num < 0) {
+    public JsonResult getAnswerList(Long questionId, Integer sort, Integer pageNum, Integer pageSize) {
+        if (questionId == null || sort == null || pageNum == null || pageSize == null || pageNum < 0 || pageSize < 0) {
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }
-        List<Answer> answers = answerService.getAnswerList(questionId, sort, startIndex, num);
+        List<Answer> answers = answerService.getAnswerList(questionId, sort, pageNum, pageSize);
         if (CollectionUtils.isEmpty(answers)){
             return JsonResult.success(new ArrayList<Answer>());
         }
