@@ -44,7 +44,7 @@ public class CommonService implements ICommonService {
         }
         file.transferTo(dest);
         log.info("上传的文件名为：{}, 保存地址：{}", fileName,  fileSavePath);
-        String url = myConfiguration.getHostAndPort() + "/images/" + yearAndMonth + "/" + reName;
+        String url = myConfiguration.getUri() + "/images/" + yearAndMonth + "/" + reName;
         return url;
     }
 

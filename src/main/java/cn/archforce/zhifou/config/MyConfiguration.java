@@ -29,9 +29,9 @@ public class MyConfiguration {
     private String root;
 
     /**
-     * 服务器地址
+     * 服务器地址、端口
      */
-    private String hostAndPort;
+    private String uri;
 
     /**
      * 获取文件上传地址
