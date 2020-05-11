@@ -19,8 +19,19 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "question")
+@Table(name = "article")
 public class Article extends BaseQuestion {
+
+
+    /**
+     * 对应elasticsearch索引
+     */
+    public static final String INDEX_NAME = "zhifou";
+
+    /**
+     * 对应elasticsearch中type类型
+     */
+    public static final String TYPE = "article";
 
     /**
      * 标题
@@ -31,5 +42,11 @@ public class Article extends BaseQuestion {
      * 点赞数
      */
     private Integer likeNum;
+
+
+    /**
+     * 状态，1-有效/0-被删除
+     */
+    private Integer status;
 
 }
