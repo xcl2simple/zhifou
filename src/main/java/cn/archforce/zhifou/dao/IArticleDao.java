@@ -10,7 +10,7 @@ import cn.archforce.zhifou.model.entity.Article;
  * @date 2020/5/11 14:49
  * @since JDK 1.8
  */
-public interface IArticleMapperDao {
+public interface IArticleDao {
 
     Article select(Long id);
 

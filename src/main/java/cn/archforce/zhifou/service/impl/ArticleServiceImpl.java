@@ -1,19 +1,20 @@
 package cn.archforce.zhifou.service.impl;
 
+import cn.archforce.zhifou.dao.IArticleDao;
 import cn.archforce.zhifou.model.entity.Article;
 import cn.archforce.zhifou.service.IArticleService;
 import cn.archforce.zhifou.utils.ElasticUtil;
+import cn.archforce.zhifou.utils.TokenUtil;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +32,30 @@ public class ArticleServiceImpl implements IArticleService {
 
     @Autowired
     private JestClient jestClient;
+
+    @Autowired
+    private IArticleDao articleDao;
+
+    /**
+     * 发布文章
+     * @param request
+     * @param article
+     * @return
+     */
+    @Override
+    public boolean addArticle(HttpServletRequest request, Article article) {
+        String token = request.getHeader("token");
+        Long userId = TokenUtil.getUserId(token);
+        article.setUserId(userId);
+        article.setCreateTime(new Date());
+        article.setLikeNum(0);
+        article.setStatus(1);
+
+        if (articleDao.add(article) != 1) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * 根据标题搜索文章，对结果进行分页

@@ -28,14 +28,13 @@ public class ArticleController {
     @Autowired
     private IArticleService articleService;
 
-    @ApiOperation(value = "发布文章", notes = "参数title、content、userId对应标题、详情、用户ID")
+    @ApiOperation(value = "发布文章", notes = "参数title、content对应标题、详情")
     @PostMapping("/add")
     public JsonResult addQuestion(HttpServletRequest request, @RequestBody Article article) {
-        if (article == null) {
+        if (article == null || article.getTitle() == null || article.getTitle().equals("")) {
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }
-
-
+        articleService.addArticle(request, article);
         return JsonResult.success();
     }
 

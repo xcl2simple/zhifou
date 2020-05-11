@@ -55,10 +55,10 @@ public class QuestionController {
         return JsonResult.success(questions);
     }
 
-    @ApiOperation(value = "发布问题", notes = "参数title、content、userId对应标题、详情、用户ID")
+    @ApiOperation(value = "发布问题", notes = "参数title、content对应标题、详情")
     @PostMapping("/add")
     public JsonResult addQuestion(HttpServletRequest request, @RequestBody Question question) {
-        if (question == null) {
+        if (question == null || question.getTitle() == null || question.getTitle().equals("")) {
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }
         questionService.addQuestion(request, question);

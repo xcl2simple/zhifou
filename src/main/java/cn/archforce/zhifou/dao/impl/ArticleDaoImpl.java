@@ -1,6 +1,6 @@
 package cn.archforce.zhifou.dao.impl;
 
-import cn.archforce.zhifou.dao.IArticleMapperDao;
+import cn.archforce.zhifou.dao.IArticleDao;
 import cn.archforce.zhifou.mapper.ArticleMapper;
 import cn.archforce.zhifou.model.entity.Article;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * @since JDK 1.8
  */
 @Repository
-public class ArticleMapperDaoImpl implements IArticleMapperDao {
+public class ArticleDaoImpl implements IArticleDao {
 
     @Autowired
     private ArticleMapper articleMapper;
