@@ -26,6 +26,8 @@ import tk.mybatis.mapper.util.Sqls;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -176,9 +178,9 @@ public class QuestionServiceImpl implements IQuestionService {
         }
         pageNum = pageNum == null || pageNum < 1 ? 1 : pageNum;
         pageSize = pageSize == null || pageSize < 0 ? 10 : pageSize;
+        searchTitle = removeChar(searchTitle);
         String dslStr =  ElasticUtil.getSearchDsl(orderByItem, pageNum, pageSize, searchTitle);
-
-        log.info("dsl : " + dslStr);
+        log.info("dsl: {}", dslStr);
 
         // 用api执行复杂查询
         List<Question> questions = new ArrayList<>();
@@ -223,6 +225,7 @@ public class QuestionServiceImpl implements IQuestionService {
      */
     @Override
     public List<Question> suggestQuestion(String title) {
+        title = removeChar(title);
         String dslStr =  ElasticUtil.getSearchDsl("viewedNum", 1, 10, title);
 
         log.info("dsl : " + dslStr);
@@ -248,6 +251,16 @@ public class QuestionServiceImpl implements IQuestionService {
         log.info("" + questions.toString());
 
         return questions;
+    }
+
+    /**
+     * 处理搜索的标题，删掉"吗"、"的"、"呢"等词
+     */
+    private String removeChar(String searchTitle) {
+        String regStr = "[吗]|[的]|[呢]|[啊]";
+        Matcher mathcher = Pattern.compile(regStr).matcher(searchTitle);
+        searchTitle = mathcher.replaceAll("");
+        return searchTitle;
     }
 
 }
