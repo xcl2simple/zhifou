@@ -93,13 +93,12 @@ public class QuestionServiceImpl implements IQuestionService {
     @Override
     public Map<String, Object> selectQuestionByIndex(Integer sort, Integer pageNum, Integer pageSize) {
         String orderBy = (sort == null || sort.equals(1)) ? "viewed_num DESC" : "create_time DESC";
-        Integer index = pageNum < 1 ? 1 : pageNum;
-        Integer number = pageSize < 1 ? 1 : pageSize;
+        Integer index = pageNum == null || pageNum < 1 ? 1 : pageNum;
+        Integer number = pageSize == null || pageSize < 1 ? 10 : pageSize;
         Page page = PageHelper.startPage(index, number, orderBy);
         List<Question> questions = questionMapper.selectByExample(Example.builder(Question.class)
                 .where(Sqls.custom().andEqualTo("status", 1))
                 .build());
-        setUserInfo(questions);
 
         Map<String, Object> result = new HashMap<>();
         result.put("total", page.getTotal());
@@ -177,7 +176,7 @@ public class QuestionServiceImpl implements IQuestionService {
             orderByItem = "createTime";
         }
         pageNum = pageNum == null || pageNum < 1 ? 1 : pageNum;
-        pageSize = pageSize == null || pageSize < 0 ? 10 : pageSize;
+        pageSize = pageSize == null || pageSize < 1 ? 10 : pageSize;
         searchTitle = removeChar(searchTitle);
         String dslStr =  ElasticUtil.getSearchDsl(orderByItem, pageNum, pageSize, searchTitle);
         log.info("dsl: {}", dslStr);

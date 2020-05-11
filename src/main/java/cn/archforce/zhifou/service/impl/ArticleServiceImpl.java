@@ -1,16 +1,23 @@
 package cn.archforce.zhifou.service.impl;
 
+import cn.archforce.zhifou.dao.DepartmentDao;
 import cn.archforce.zhifou.dao.IArticleDao;
-import cn.archforce.zhifou.model.entity.Article;
+import cn.archforce.zhifou.dao.UserMapper;
+import cn.archforce.zhifou.mapper.ArticleMapper;
+import cn.archforce.zhifou.model.entity.*;
 import cn.archforce.zhifou.service.IArticleService;
 import cn.archforce.zhifou.utils.ElasticUtil;
 import cn.archforce.zhifou.utils.TokenUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.util.Sqls;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -34,7 +41,16 @@ public class ArticleServiceImpl implements IArticleService {
     private JestClient jestClient;
 
     @Autowired
+    private ArticleMapper articleMapper;
+
+    @Autowired
     private IArticleDao articleDao;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private DepartmentDao departmentDao;
 
     /**
      * 发布文章
@@ -58,6 +74,31 @@ public class ArticleServiceImpl implements IArticleService {
     }
 
     /**
+     * 文章首页推荐
+     * @param sort
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public Map<String, Object> selectArticlesByIndex(Integer sort, Integer pageNum, Integer pageSize) {
+        String orderBy = (sort == null || sort.equals(1)) ? "like_num DESC" : "create_time DESC";
+        Integer index = pageNum == null || pageNum < 1 ? 1 : pageNum;
+        Integer number = pageSize == null || pageSize < 1 ? 10 : pageSize;
+        Page page = PageHelper.startPage(index, number, orderBy);
+        List<Article> articles = articleMapper.selectByExample(Example.builder(Article.class)
+                .where(Sqls.custom().andEqualTo("status", 1))
+                .build());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("total", page.getTotal());
+        result.put("totalPage", page.getPages());
+        result.put("list", articles);
+
+        return result;
+    }
+
+    /**
      * 根据标题搜索文章，对结果进行分页
      * @param sort
      * @param pageNum
@@ -75,7 +116,7 @@ public class ArticleServiceImpl implements IArticleService {
             orderByItem = "createTime";
         }
         pageNum = pageNum == null || pageNum < 1 ? 1 : pageNum;
-        pageSize = pageSize == null || pageSize < 0 ? 10 : pageSize;
+        pageSize = pageSize == null || pageSize < 1 ? 10 : pageSize;
         searchTitle = removeChar(searchTitle);
         String dslStr =  ElasticUtil.getSearchDsl(orderByItem, pageNum, pageSize, searchTitle);
         log.info("dsl: {}", dslStr);
@@ -105,8 +146,9 @@ public class ArticleServiceImpl implements IArticleService {
             }
             articles.add(source);
         }
-        Integer totalPage = (execute.getTotal() + pageSize - 1) / pageSize;
+        setAuthorInfo(articles);
 
+        Integer totalPage = (execute.getTotal() + pageSize - 1) / pageSize;
         log.info("TotalPage: " + totalPage + "" + articles.toString());
 
         result.put("total", execute.getTotal());
@@ -139,7 +181,7 @@ public class ArticleServiceImpl implements IArticleService {
             Article source = hit.source;
             articles.add(source);
         }
-
+        setAuthorInfo(articles);
         log.info("" + articles.toString());
 
         return articles;
@@ -153,6 +195,35 @@ public class ArticleServiceImpl implements IArticleService {
         Matcher mathcher = Pattern.compile(regStr).matcher(searchTitle);
         searchTitle = mathcher.replaceAll("");
         return searchTitle;
+    }
+
+    /**
+     * 为文章实体设置发布者信息
+     * @param articles
+     * @return
+     */
+    private boolean setAuthorInfo(List<Article> articles){
+        if (articles != null){
+            try {
+                Iterator<Article> iterator = articles.iterator();
+                Article article;
+                User user;
+                Author author;
+                Job job;
+                while (iterator.hasNext()){
+                    article = iterator.next();
+                    user = userMapper.getUserById(article.getUserId());
+                    job = departmentDao.getJob(user.getJobId());
+                    author = new Author(user.getId(), user.getName(), job.getJobName(), user.getAvatar());
+                    article.setAuthor(author);
+                }
+                return true;
+            }catch (Exception e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
     }
 
 

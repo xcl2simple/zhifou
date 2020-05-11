@@ -16,6 +16,8 @@ import java.util.Map;
  */
 public interface IArticleService {
 
+    Map<String, Object> selectArticlesByIndex(Integer sort, Integer pageNum,Integer pageSize);
+
     boolean addArticle(HttpServletRequest request, Article article);
 
     Map<String, Object> searchArticle(Integer sort, Integer pageNum, Integer pageSize, String searchTitle);

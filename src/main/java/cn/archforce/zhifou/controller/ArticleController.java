@@ -5,10 +5,15 @@ import cn.archforce.zhifou.common.ResultCodeEnum;
 import cn.archforce.zhifou.model.entity.Article;
 import cn.archforce.zhifou.service.IArticleService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +32,23 @@ public class ArticleController {
 
     @Autowired
     private IArticleService articleService;
+
+    @ApiOperation(value = "根据sort、pageNum、pageSize参数分页获取文章列表", notes = "排序规则：1代表按热度排序，2代表按时间排序")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sort", value = "排序规则", paramType = "query", required = false, dataType = "int"),
+            @ApiImplicitParam(name = "pageNum", value = "分页查询的索引", paramType = "query", required = false, dataType = "int"),
+            @ApiImplicitParam(name = "pageSize", value = "查询的数据条数", paramType = "query", required = false, dataType = "int")
+    })
+    @GetMapping("/list")
+    public JsonResult getArticlesByIndex(@RequestParam(required = false) Integer sort,
+                                         @RequestParam(required = false) Integer pageNum,
+                                         @RequestParam(required = false) Integer pageSize) {
+        Map<String, Object> articles = articleService.selectArticlesByIndex(sort, pageNum, pageSize);
+        if (CollectionUtils.isEmpty(articles)){
+            return JsonResult.success(new HashMap<String, Object>());
+        }
+        return JsonResult.success(articles);
+    }
 
     @ApiOperation(value = "发布文章", notes = "参数title、content对应标题、详情")
     @PostMapping("/add")
