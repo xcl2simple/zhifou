@@ -8,6 +8,7 @@ import cn.archforce.zhifou.model.entity.User;
 import cn.archforce.zhifou.service.UserService;
 import cn.archforce.zhifou.utils.PasswordUtil;
 import cn.archforce.zhifou.utils.TokenUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2020/3/31 17:18
  * 对用户请求的处理的具体实现
  */
+@Slf4j
 @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
         if (token == null){
             return JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION);
         }
-        System.out.println(token);
+        log.info("token: " + token);
         //将token写到响应头部，以待以后的请求认证
         response.setHeader("token", token);
         response.setHeader("Access-Control-Expose-Headers", "token");

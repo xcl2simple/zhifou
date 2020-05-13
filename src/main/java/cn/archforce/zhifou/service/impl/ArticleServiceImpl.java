@@ -158,6 +158,7 @@ public class ArticleServiceImpl implements IArticleService {
         return result;
     }
 
+    @Override
     public List<Article> suggestArticle(String title) {
         title = removeChar(title);
         String dslStr =  ElasticUtil.getSearchDsl("likeNum", 1, 10, title);
@@ -185,6 +186,19 @@ public class ArticleServiceImpl implements IArticleService {
         log.info("" + articles.toString());
 
         return articles;
+    }
+
+    @Override
+    public Article selectArticleById(Long articleId){
+        Article article = articleDao.select(articleId);
+        if (article != null){
+            //将文章添加至列表，直接使用已有的方法，减少重复代码
+            List<Article> list = new ArrayList<>();
+            list.add(article);
+            setAuthorInfo(list);
+            log.info("" + article.toString());
+        }
+        return article;
     }
 
     /**
@@ -225,6 +239,5 @@ public class ArticleServiceImpl implements IArticleService {
         }
         return false;
     }
-
 
 }

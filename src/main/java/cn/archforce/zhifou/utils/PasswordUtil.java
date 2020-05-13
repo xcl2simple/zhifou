@@ -22,7 +22,6 @@ public class PasswordUtil {
         for (int i = 0; i < chars.length; i++){
             chars[i] = (char)(chars[i] ^ KEY);
         }
-        System.out.println(new String(chars));
         return new String(chars);
     }
 

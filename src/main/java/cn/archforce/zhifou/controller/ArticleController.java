@@ -77,4 +77,14 @@ public class ArticleController {
         return JsonResult.success(list);
     }
 
+    @ApiOperation(value = "根据文章ID获取文章详情")
+    @GetMapping("")
+    public JsonResult getArticleDetails(@RequestParam("articleId") Long articleId){
+        if (articleId == null){
+            return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
+        }
+        Article article = articleService.selectArticleById(articleId);
+        return (article == null) ? JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION) : JsonResult.success(article);
+    }
+
 }

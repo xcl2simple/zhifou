@@ -24,4 +24,11 @@ public interface IArticleService {
 
     List<Article> suggestArticle(String title);
 
+    /**
+     * 根据ID获取文章详情
+     * @param articleId
+     * @return
+     */
+    Article selectArticleById(Long articleId);
+
 }
