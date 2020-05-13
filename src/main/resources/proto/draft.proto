@@ -1,0 +1,41 @@
+syntax = "proto3";
+package cn.archforce.zhifou.grpc;
+option java_package = "cn.archforce.zhifou.grpc";
+option java_outer_classname = "DraftServiceProto";
+option java_multiple_files = true;
+
+service DraftService {
+
+  rpc addAnswerDraft (DraftAnswer) returns (DraftReply) {}
+
+  rpc addArticleDraft (DraftArticle) returns (DraftReply) {}
+
+}
+
+message DraftAnswer {
+
+  int64 questionId = 1;
+
+  int64 userId = 2;
+
+  string content = 3;
+
+}
+
+message DraftArticle {
+
+  int64 userId = 1;
+
+  string title = 2;
+
+  string content = 3;
+
+}
+
+message DraftReply {
+
+  int32 code = 1;
+
+  string message = 2;
+
+}

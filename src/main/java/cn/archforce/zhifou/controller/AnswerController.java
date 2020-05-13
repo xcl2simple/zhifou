@@ -3,6 +3,7 @@ package cn.archforce.zhifou.controller;
 import cn.archforce.zhifou.common.JsonResult;
 import cn.archforce.zhifou.common.ResultCodeEnum;
 import cn.archforce.zhifou.model.entity.Answer;
+import cn.archforce.zhifou.model.entity.AnswerDraft;
 import cn.archforce.zhifou.service.AnswerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -71,6 +72,21 @@ public class AnswerController {
             return JsonResult.success(new HashMap<String, Object>());
         }
         return JsonResult.success(answers);
+    }
+
+    /**
+     * 保存、更新草稿箱
+     * @param answerDraft
+     * @return
+     */
+    @ApiOperation(value = "保存、更新回答草稿箱")
+    @PostMapping("/draft/add")
+    public JsonResult addAnswerDraft(HttpServletRequest request, @RequestBody AnswerDraft answerDraft) {
+        Integer result = answerService.addOrUpdateAnswerDraft(request, answerDraft);
+        if (result > 0) {
+            return JsonResult.success();
+        }
+        return JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION);
     }
 
 }

@@ -1,6 +1,7 @@
 package cn.archforce.zhifou.service;
 
 import cn.archforce.zhifou.model.entity.Answer;
+import cn.archforce.zhifou.model.entity.AnswerDraft;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -29,4 +30,5 @@ public interface AnswerService {
      */
     Map<String, Object> getAnswerList(Long questionId, Integer sort, Integer pageNum, Integer pageSize);
 
+    Integer addOrUpdateAnswerDraft(HttpServletRequest request, AnswerDraft answerDraft);
 }

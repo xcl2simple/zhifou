@@ -1,13 +1,10 @@
 package cn.archforce.zhifou.service.impl;
 
-import cn.archforce.zhifou.config.MyConfiguration;
 import cn.archforce.zhifou.dao.AnswerDao;
 import cn.archforce.zhifou.dao.DepartmentDao;
 import cn.archforce.zhifou.dao.UserMapper;
-import cn.archforce.zhifou.model.entity.Answer;
-import cn.archforce.zhifou.model.entity.Author;
-import cn.archforce.zhifou.model.entity.Job;
-import cn.archforce.zhifou.model.entity.User;
+import cn.archforce.zhifou.grpc.DraftClient;
+import cn.archforce.zhifou.model.entity.*;
 import cn.archforce.zhifou.service.AnswerService;
 import cn.archforce.zhifou.utils.TokenUtil;
 import com.github.pagehelper.Page;
@@ -37,13 +34,11 @@ public class AnswerServiceImpl implements AnswerService {
     @Autowired
     private DepartmentDao departmentDao;
 
-    @Autowired
-    private MyConfiguration myConfiguration;
-
     @Override
     public boolean addAnswer(HttpServletRequest request, Answer answer) {
         String token = request.getHeader("token");
         Long userId = TokenUtil.getUserId(token);
+        answer.setId(null);
         answer.setUserId(userId);
         answer.setCreateTime(new Date());
         answer.setLikeNum(0);
@@ -73,6 +68,33 @@ public class AnswerServiceImpl implements AnswerService {
         result.put("totalPage", page.getPages());
         result.put("list", answers);
         return result;
+    }
+
+    /**
+     * 保存、更新回答草稿
+     * @param request
+     * @param answerDraft
+     * @return
+     */
+    @Override
+    public Integer addOrUpdateAnswerDraft(HttpServletRequest request, AnswerDraft answerDraft) {
+        String token = request.getHeader("token");
+        Long userId = TokenUtil.getUserId(token);
+        if (answerDraft.getQuestionId() == null || answerDraft.getContent() == null){
+            return 0;
+        }
+        if (answerDraft.getId() == null) {
+            DraftClient draftClient = new DraftClient("121.89.216.59", 50051);
+            Integer result = draftClient.insertAnswerDraft(answerDraft.getQuestionId(), userId, answerDraft.getContent());
+            try {
+                draftClient.shutdown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return result;
+        } else {
+            return 0;
+        }
     }
 
     /**
