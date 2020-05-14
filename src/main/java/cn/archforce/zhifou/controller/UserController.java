@@ -142,6 +142,20 @@ public class UserController {
         return userService.getInfo(request);
     }
 
+    /**
+     * 获取积分排行榜
+     * @param topNum 排名前多少位,默认20
+     * @return
+     */
+    @ApiOperation(value = "获取积分排行榜")
+    @GetMapping("/user/score/list")
+    public JsonResult getScoreList(@RequestParam("topNum") Integer topNum){
+        if (topNum <= 0){
+            return userService.getScoreList(20);
+        }
+        return userService.getScoreList(topNum);
+    }
+
     @PutMapping("/updateEmail")
     public JsonResult updateEmail(){
 

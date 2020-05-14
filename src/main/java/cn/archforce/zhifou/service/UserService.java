@@ -77,4 +77,11 @@ public interface UserService {
      */
     String updateUserInfo(Long id, String name, Long departmentId, Long jobId);
 
+    /**
+     * 获取积分排行榜
+     * @param topNum 排名前多少位,默认20
+     * @return
+     */
+    JsonResult getScoreList(Integer topNum);
+
 }

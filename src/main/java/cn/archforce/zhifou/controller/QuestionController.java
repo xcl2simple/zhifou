@@ -71,8 +71,8 @@ public class QuestionController {
      * @return
      */
     @ApiOperation(value = "获取问题详情", notes = "参数questionId为问题ID")
-    @GetMapping("/{questionId}")
-    public JsonResult getQuestionDetails(@PathVariable Long questionId){
+    @GetMapping("")
+    public JsonResult getQuestionDetails(@RequestParam(value = "questionId") Long questionId){
         if (questionId == null){
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }

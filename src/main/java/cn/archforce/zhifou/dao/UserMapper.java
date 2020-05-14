@@ -1,9 +1,12 @@
 package cn.archforce.zhifou.dao;
 
+import cn.archforce.zhifou.model.entity.Score;
 import cn.archforce.zhifou.model.entity.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.common.BaseMapper;
+
+import java.util.List;
 
 /**
  * @author 隔壁老李
@@ -104,5 +107,13 @@ public interface UserMapper extends BaseMapper<User> {
      */
     @Update("UPDATE user SET score=#{score}+score WHERE id=#{id}")
     int addScoreById(Long id, Long score);
+
+    /**
+     * 获取积分排行榜
+     * @param topNum 排名前多少
+     * @return
+     */
+    @Select("SELECT id,name,score FROM user ORDER BY score DESC LIMIT #{topNum}")
+    List<Score> getScoreList(Integer topNum);
 
 }

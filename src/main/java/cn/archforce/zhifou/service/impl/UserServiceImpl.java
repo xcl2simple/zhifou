@@ -4,6 +4,7 @@ import cn.archforce.zhifou.common.JsonResult;
 import cn.archforce.zhifou.common.ResultCodeEnum;
 import cn.archforce.zhifou.dao.DepartmentDao;
 import cn.archforce.zhifou.dao.UserMapper;
+import cn.archforce.zhifou.model.entity.Score;
 import cn.archforce.zhifou.model.entity.User;
 import cn.archforce.zhifou.service.UserService;
 import cn.archforce.zhifou.utils.PasswordUtil;
@@ -16,6 +17,8 @@ import springfox.documentation.spring.web.json.Json;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author 隔壁老李
@@ -80,21 +83,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean verifyEmail(String workNum, String email) {
         //判断是否可由工号和邮箱查询出用户信息
-        if (userMapper.getUserByWorkNumAndEmail(workNum, email) == null){
-            //不匹配
-            return false;
-        }
-        return true;
+        return  (userMapper.getUserByWorkNumAndEmail(workNum, email) != null);
     }
 
     @Override
     public Boolean updatePassword(String workNum, String password) {
         String encryptPassword = PasswordUtil.encryption(password);
-        if (userMapper.updatePasswordByWorkNum(workNum, encryptPassword) != 1){
-            //修改失败
-            return false;
-        }
-        return true;
+        return  (userMapper.updatePasswordByWorkNum(workNum, encryptPassword) == 1);
     }
 
     @Override
@@ -121,4 +116,14 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public JsonResult getScoreList(Integer topNum) {
+        List<Score> scores = userMapper.getScoreList(topNum);
+        if (scores == null){
+            log.info("获取积分排行榜失败");
+            return JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION, new ArrayList<>());
+        }
+        log.info("ScoreList: " + scores);
+        return JsonResult.success(scores);
+    }
 }

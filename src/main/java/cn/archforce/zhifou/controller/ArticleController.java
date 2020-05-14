@@ -79,7 +79,7 @@ public class ArticleController {
 
     @ApiOperation(value = "根据文章ID获取文章详情")
     @GetMapping("")
-    public JsonResult getArticleDetails(@RequestParam("articleId") Long articleId){
+    public JsonResult getArticleDetails(@RequestParam(value = "articleId") Long articleId){
         if (articleId == null){
             return JsonResult.failure(ResultCodeEnum.PARAM_IS_INVALID);
         }
