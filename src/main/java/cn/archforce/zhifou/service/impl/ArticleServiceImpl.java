@@ -89,7 +89,7 @@ public class ArticleServiceImpl implements IArticleService {
         List<Article> articles = articleMapper.selectByExample(Example.builder(Article.class)
                 .where(Sqls.custom().andEqualTo("status", 1))
                 .build());
-
+        setAuthorInfo(articles);
         Map<String, Object> result = new HashMap<>();
         result.put("total", page.getTotal());
         result.put("totalPage", page.getPages());
