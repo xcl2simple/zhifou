@@ -1,5 +1,6 @@
 package cn.archforce.zhifou.service.impl;
 
+import cn.archforce.zhifou.config.MyConfiguration;
 import cn.archforce.zhifou.dao.AnswerDao;
 import cn.archforce.zhifou.dao.DepartmentDao;
 import cn.archforce.zhifou.dao.UserMapper;
@@ -33,6 +34,9 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Autowired
     private DepartmentDao departmentDao;
+
+    @Autowired
+    private MyConfiguration myConfiguration;
 
     @Override
     public boolean addAnswer(HttpServletRequest request, Answer answer) {
@@ -84,7 +88,7 @@ public class AnswerServiceImpl implements AnswerService {
             return 0;
         }
         if (answerDraft.getId() == null) {
-            DraftClient draftClient = new DraftClient("121.89.216.59", 50051);
+            DraftClient draftClient = new DraftClient(myConfiguration.getRpcServerHost(), myConfiguration.getRpcServerPort());
             Integer result = draftClient.insertAnswerDraft(answerDraft.getQuestionId(), userId, answerDraft.getContent());
             try {
                 draftClient.shutdown();

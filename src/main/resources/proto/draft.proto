@@ -6,19 +6,19 @@ option java_multiple_files = true;
 
 service DraftService {
 
-  rpc addAnswerDraft (DraftAnswer) returns (DraftReply) {}
+  rpc AddAnswerDraft (DraftAnswer) returns (DraftReply) {}
 
-  rpc addArticleDraft (DraftArticle) returns (DraftReply) {}
+  rpc AddArticleDraft (DraftArticle) returns (DraftReply) {}
 
 }
 
 message DraftAnswer {
 
-  int64 questionId = 1;
+   int64 questionId = 1;
 
-  int64 userId = 2;
+   int64 userId = 2;
 
-  string content = 3;
+   string content = 3;
 
 }
 

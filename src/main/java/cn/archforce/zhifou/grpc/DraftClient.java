@@ -3,9 +3,10 @@ package cn.archforce.zhifou.grpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Description:
@@ -15,8 +16,9 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/5/13 17:29
  * @since JDK 1.8
  */
-@Slf4j
 public class DraftClient {
+
+    private static final Logger logger = Logger.getLogger(DraftClient.class.getName());
 
     private final ManagedChannel channel;
     private final DraftServiceGrpc.DraftServiceBlockingStub blockingStub;
@@ -33,7 +35,7 @@ public class DraftClient {
     }
 
     public Integer insertAnswerDraft(Long questionId, Long userId, String content) {
-        log.info("Will try to insert into draft_answer, params: questionId={}, userId={}, content= {}",questionId, userId, content);
+        logger.info("gRPC will try to insert into draft_answer, param: content= " + content);
         DraftAnswer draftAnswer = DraftAnswer.newBuilder().setQuestionId(questionId).setUserId(userId)
                 .setContent(content).build();
         DraftReply response;
@@ -41,10 +43,10 @@ public class DraftClient {
         try {
             response = blockingStub.addAnswerDraft(draftAnswer);
         } catch (StatusRuntimeException e) {
-            log.error("RPC failed: {0}", e.getStatus());
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
             return 0;
         }
-        log.info("response: " + response);
+        logger.info("response: " + response.getMessage());
         return response.getCode();
     }
 

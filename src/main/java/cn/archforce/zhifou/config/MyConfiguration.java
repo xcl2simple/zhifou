@@ -34,6 +34,16 @@ public class MyConfiguration {
     private String uri;
 
     /**
+     * C++服务端IP
+     */
+    private String rpcServerHost;
+
+    /**
+     * C++服务端端口
+     */
+    private Integer rpcServerPort;
+
+    /**
      * 获取文件上传地址
      * @return
      */
