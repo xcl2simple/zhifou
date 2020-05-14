@@ -109,6 +109,13 @@ public interface UserMapper extends BaseMapper<User> {
     int addScoreById(Long id, Long score);
 
     /**
+     * 清除所有用户的积分
+     * @return
+     */
+    @Update("UPDATE user SET score=0")
+    int clearScore();
+
+    /**
      * 获取积分排行榜
      * @param topNum 排名前多少
      * @return
