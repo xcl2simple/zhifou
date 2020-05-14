@@ -18,15 +18,20 @@ public class ScheduScore {
     @Autowired
     UserMapper userMapper;
 
+    @Autowired
+    RedisUtil redisUtil;
+
     /**
-     * 定时每个月最后一天最后一秒清除分数
+     * 定时每个月第一天凌晨清除分数
      */
-    @Scheduled(cron = "59 59 23 L * ?")
+    @Scheduled(cron = "0 0 0 1 * ?")
     private void clearScore(){
+        //清除缓存
+        redisUtil.removeZSet();
         if (userMapper.clearScore() == 0){
             log.info("清除积分失败");
         }else {
-            log.info("月末最后一秒清除积分");
+            log.info("月初清除积分");
         }
     }
 

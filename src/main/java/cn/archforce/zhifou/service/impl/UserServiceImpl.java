@@ -8,6 +8,7 @@ import cn.archforce.zhifou.model.entity.Score;
 import cn.archforce.zhifou.model.entity.User;
 import cn.archforce.zhifou.service.UserService;
 import cn.archforce.zhifou.utils.PasswordUtil;
+import cn.archforce.zhifou.utils.RedisUtil;
 import cn.archforce.zhifou.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author 隔壁老李
@@ -35,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private DepartmentDao departmentDao;
+
+    @Autowired
+    RedisUtil redisUtil;
 
     @Override
     public JsonResult login(String workNum, String password, HttpServletResponse response) {
@@ -118,12 +123,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JsonResult getScoreList(Integer topNum) {
-        List<Score> scores = userMapper.getScoreList(topNum);
-        if (scores == null){
-            log.info("获取积分排行榜失败");
-            return JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION, new ArrayList<>());
+        Set<Object> scoreSet = redisUtil.zGetList(topNum);
+        if (scoreSet == null){
+            //Redis缓存中的数据不满足条件，查询数据库
+            List<Score> scores = userMapper.getScoreList(topNum);
+            if (scores == null){
+                log.info("获取积分排行榜失败");
+                return JsonResult.failure(ResultCodeEnum.SEVER_EXCEPTION, new ArrayList<>());
+            }
+            log.info("数据库获取排行榜: " + scores);
+            //更新缓存
+            redisUtil.zAddList(scores);
+            return JsonResult.success(scores);
+        }else {
+            log.info("redis缓存获取排行榜：" + scoreSet);
+            return JsonResult.success(scoreSet);
         }
-        log.info("ScoreList: " + scores);
-        return JsonResult.success(scores);
     }
 }

@@ -116,6 +116,14 @@ public interface UserMapper extends BaseMapper<User> {
     int clearScore();
 
     /**
+     * 通过用户id获取积分
+     * @param id
+     * @return
+     */
+    @Select("SELECT id,name,score FROM user WHERE id=#{id}")
+    Score getScoreById(Long id);
+
+    /**
      * 获取积分排行榜
      * @param topNum 排名前多少
      * @return

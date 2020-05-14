@@ -1,14 +1,15 @@
 package cn.archforce.zhifou.utils;
 
+import cn.archforce.zhifou.model.entity.Score;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author 隔壁老李
@@ -17,6 +18,8 @@ import java.util.concurrent.TimeUnit;
  **/
 @Component
 public class RedisUtil {
+
+    private static final Logger logger = Logger.getLogger(RedisUtil.class.getName());
 
     @Autowired
     RedisTemplate<String,Object> redisTemplate;
@@ -374,6 +377,71 @@ public class RedisUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    //===============================zSet=================================
+
+    private final static String scores = "scores";
+    /**
+     * 批量缓存积分
+     * @param list
+     */
+    public void zAddList(List<Score> list){
+        try {
+            for (int i = 0; i < list.size(); i++) {
+                redisTemplate.opsForZSet().add(scores, list.get(i), list.get(i).getScore());
+            }
+            logger.info("积分缓存成功");
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "积分缓存失败：{0}", e.getMessage());
+        }
+    }
+
+    /**
+     * 添加或更新缓存记录
+     * @param score
+     */
+    public void zAdd(Score score){
+        try {
+            redisTemplate.opsForZSet().add(scores, score, score.getScore());
+            logger.info("积分缓存更新成功");
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "积分缓存更新失败：{0}", e.getMessage());
+        }
+    }
+
+    /**
+     * 查询排名前topNum的记录
+     * @param topNum
+     * @return
+     */
+    public Set<Object> zGetList(long topNum){
+        if (hasKey(scores) && redisTemplate.opsForZSet().size(scores) >= topNum){
+            //key存在且记录数量大于查询的数量，直接查缓存
+            try {
+                Set<Object> scoreSet = redisTemplate.opsForZSet().reverseRange(scores, 0, topNum);
+                logger.info("排行榜：" + scoreSet.toString());
+                return scoreSet;
+            }catch (Exception e){
+                logger.log(Level.WARNING, "获取缓存失败");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 删除已有缓存
+     */
+    public void removeZSet(){
+        if (hasKey(scores)){
+            //key存在且记录数量大于查询的数量，直接查缓存
+            try {
+                redisTemplate.opsForZSet().removeRange(scores, 0, -1);
+                logger.info("删除分数缓存");
+            }catch (Exception e){
+                logger.log(Level.WARNING, "缓存删除失败");
+            }
         }
     }
 
