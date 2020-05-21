@@ -26,8 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
         // addPathPatterns("/**") 表示拦截所有的请求，
         // excludePathPatterns("/login") 表示不拦截这些请求
         registry.addInterceptor(tokenInterceptor)
-                .excludePathPatterns("/**")
-                .excludePathPatterns("/login", "/sendEmail", "/register", "/retrievePassword", "/department/list", "job/list")
+                .excludePathPatterns("/login", "/sendEmail", "/register", "/retrievePassword", "/department/list", "/job/list")
                 .excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**")
                 .excludePathPatterns("/images/**");
     }
