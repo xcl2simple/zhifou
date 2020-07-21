@@ -17,11 +17,9 @@ import javax.persistence.*;
  * @date 2020/4/7 10:13
  * @since JDK 1.8
  */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Table(name = "answer")
 public class Answer extends BaseQuestion{
 

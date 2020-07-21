@@ -17,9 +17,7 @@ import javax.persistence.Table;
  * @date 2020/4/7 10:33
  * @since JDK 1.8
  */
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "question")

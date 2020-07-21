@@ -11,9 +11,7 @@ import javax.persistence.Table;
  * @date 2020/4/10 11:27
  * 岗位
  */
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "job")

@@ -1,8 +1,7 @@
 package cn.archforce.zhifou.model.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+
 import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.io.Serializable;
@@ -16,9 +15,7 @@ import java.util.Date;
  * @date 2020/4/7 10:36
  * @since JDK 1.8
  */
-@Getter
-@Setter
-@ToString
+@Data
 public class BaseQuestion implements Serializable {
 
     private static final long serialVersionUID = 1L;

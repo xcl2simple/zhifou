@@ -7,8 +7,7 @@ import lombok.*;
  * @date 2020/4/10 12:56
  * 作者部分信息
  */
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString

@@ -14,11 +14,9 @@ import java.util.Date;
  * @date 2020/5/13 17:42
  * @since JDK 1.8
  */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Table(name = "draft_answer")
 public class AnswerDraft {
 

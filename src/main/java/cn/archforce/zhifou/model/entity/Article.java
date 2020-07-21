@@ -1,9 +1,8 @@
 package cn.archforce.zhifou.model.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.Table;
 
@@ -15,8 +14,7 @@ import javax.persistence.Table;
  * @date 2020/4/7 10:52
  * @since JDK 1.8
  */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "article")

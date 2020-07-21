@@ -9,11 +9,9 @@ import java.io.Serializable;
  * @date 2020/5/14 17:26
  * 分数
  */
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class Score implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -50,4 +50,20 @@ public class DraftClient {
         return response.getCode();
     }
 
+    public Integer insertArticleDraft(Long userId, String title, String content) {
+        logger.info("gRPC will try to insert into draft_article, param: content= " + content);
+        DraftArticle draftArticle = DraftArticle.newBuilder().setUserId(userId).setTitle(title)
+                .setContent(content).build();
+        DraftReply response;
+
+        try {
+            response = blockingStub.addArticleDraft(draftArticle);
+        } catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            return 0;
+        }
+        logger.info("response: " + response.getMessage());
+        return response.getCode();
+    }
+
 }

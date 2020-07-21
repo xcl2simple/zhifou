@@ -1,20 +1,19 @@
 package cn.archforce.zhifou.model.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * @author 隔壁老李
  * @date 2020/3/31 15:11
  * 用户实体类
  */
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Table(name = "user")
 public class User {
 
